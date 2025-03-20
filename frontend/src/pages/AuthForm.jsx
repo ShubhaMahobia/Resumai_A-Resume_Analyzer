@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AuthForm.css';
-import Toast from './Toast';
+import Toast from '../components/Toast';
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
