@@ -6,6 +6,7 @@ import Toast from './Toast';
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
+    fullName: '',
     email: '',
     password: ''
   });
@@ -41,7 +42,6 @@ const AuthForm = () => {
           isLogin ? 'Successfully logged in!' : 'Account created successfully!',
           'success'
         );
-        // Store user data in localStorage as backup
         localStorage.setItem('userData', JSON.stringify(data));
         setTimeout(() => {
           navigate('/home');
@@ -63,6 +63,70 @@ const AuthForm = () => {
 
   return (
     <div className="auth-container">
+      <div className="auth-left">
+        <div className="auth-box">
+          <div className="logo">RESUMAI.</div>
+          <h2>Sign Up</h2>
+          <form onSubmit={handleSubmit}>
+            {!isLogin && (
+              <>
+                <div className="form-group">
+                  <input
+                    type="text"
+                    name="fullName"
+                    placeholder="Full Name"
+                    value={formData.fullName}
+                    onChange={handleChange}
+                    required={!isLogin}
+                  />
+                </div>
+              </>
+            )}
+            <div className="form-group">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <button type="submit" className="submit-btn">
+              {isLogin ? 'Login' : 'Register Now'}
+            </button>
+          </form>
+          <p className="toggle-text">
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <span onClick={() => setIsLogin(!isLogin)} className="toggle-link">
+              {isLogin ? 'Sign Up' : 'Login'}
+            </span>
+          </p>
+        </div>
+      </div>
+      <div className="auth-right">
+        <div className="welcome-content">
+          <div className="logo">RESUMAI.</div>
+          <h1>Hello, Friend!</h1>
+          <p>Join us and let AI help you analyze and improve your resume.</p>
+          <div className="social-links">
+            <a href="#" className="social-link">f</a>
+            <a href="#" className="social-link">t</a>
+            <a href="#" className="social-link">g</a>
+            <a href="#" className="social-link">in</a>
+          </div>
+        </div>
+      </div>
       {toast.show && (
         <Toast
           message={toast.message}
@@ -70,40 +134,6 @@ const AuthForm = () => {
           onClose={() => setToast({ ...toast, show: false })}
         />
       )}
-      <div className="auth-box">
-        <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" className="submit-btn">
-            {isLogin ? 'Login' : 'Sign Up'}
-          </button>
-        </form>
-        <p className="toggle-text">
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <span onClick={() => setIsLogin(!isLogin)} className="toggle-link">
-            {isLogin ? 'Sign Up' : 'Login'}
-          </span>
-        </p>
-      </div>
     </div>
   );
 };

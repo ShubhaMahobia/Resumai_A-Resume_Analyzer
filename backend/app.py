@@ -65,6 +65,7 @@ def logout_user():
 def register_user():
     email = request.json["email"]
     password = request.json["password"]
+    fullName = request.json["fullName"]
 
     user_exists = User.query.filter_by(email = email).first() is not None
     hash_pass = bcrypt.generate_password_hash(password=password)
@@ -72,7 +73,7 @@ def register_user():
     if user_exists:
         abort(409)
     
-    new_user = User(email = email,password = hash_pass)
+    new_user = User(email = email,password = hash_pass,fullName = fullName)
     db.session.add(new_user)
     db.session.commit()
 
