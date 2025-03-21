@@ -1,32 +1,20 @@
-from flask import Flask,request, session, abort
-from flask.json import jsonify
+from flask import Flask,request, abort
 from models.user import db,User
 from flask_bcrypt import Bcrypt
-from flask_sqlalchemy import SQLAlchemy
 from config import ApplicationConfig
-from flask_session import Session
 from flask_cors import CORS
-from datetime import timedelta
+from flask_restful import Resource,Api
+from flask_jwt_extended import create_access_token, JWTManager, get_jwt_identity,jwt_required
 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
-app.config.update(
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SAMESITE='Lax',
-    PERMANENT_SESSION_LIFETIME=timedelta(days=7)
-)
 
-CORS(app, 
-     resources={r"/*": {"origins": "http://localhost:5173"}},
-     supports_credentials=True,
-     allow_headers=["Content-Type", "Authorization"],
-     expose_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
-bcrypt = Bcrypt(app=app)
-server_session = Session(app=app)
+
+# Initialize extensions
+bcrypt = Bcrypt(app)
 db.init_app(app)
-
+api = Api(app=app)
+jwt = JWTManager(app)
 with app.app_context():
     db.create_all()
 
@@ -34,77 +22,55 @@ with app.app_context():
 def test():
     return "Server is working"   
 
-@app.route("/profile")
-def getProfile():
-    user_id = session.get("user_id")
 
-    if not user_id:
-        return jsonify({
-            "error" : "Unauthorized"
-        }), 401
-    
-    user = User.query.filter_by(id=user_id).first()
-    if not user:
-        return jsonify({
-            "error" : "User not found"
-        }), 404
+class UserRegistration(Resource):
+    def post(self):
+        data = request.get_json()
+        fullName = data['fullName']
+        password = data['password']
+        email = data['email']
+
+        if not fullName or not password:
+            return{'Message' : 'Fill all the details'}
+        if User.query.filter_by(email=email).first():
+            return{'Message':'User already exist with this email.'}
         
-    return jsonify({
-        "id" : user.id,
-        "email" : user.email
-    })
-
-@app.route("/logout", methods=["POST"])
-def logout_user():
-    session.clear()
-    return jsonify({
-        "message": "Logged out successfully"
-    })
-
-@app.route('/register',methods = ["POST"])
-def register_user():
-    email = request.json["email"]
-    password = request.json["password"]
-    fullName = request.json["fullName"]
-
-    user_exists = User.query.filter_by(email = email).first() is not None
-    hash_pass = bcrypt.generate_password_hash(password=password)
-
-    if user_exists:
-        abort(409)
+        hash_pw = password=bcrypt.generate_password_hash(password)
+        new_user = User(fullName=fullName,email=email,password=hash_pw)
+        db.session.add(new_user)
+        db.session.commit()
+        return {'Message' : 'User created Successfully'},200
     
-    new_user = User(email = email,password = hash_pass,fullName = fullName)
-    db.session.add(new_user)
-    db.session.commit()
 
-    return jsonify({
-        "id" : new_user.id,
-        "email" : new_user.email
-    })
+class UserLogin(Resource):
+    def post(self):
+        data = request.get_json()
+        password = data['password']
+        email = data['email']
 
-@app.route('/login',methods=["POST"])
-def login_user():
-    email = request.json["email"]
-    password = request.json["password"]
+        if not email or not password:
+            return{'Message' : 'Fill all the details'}
+        user_exist = User.query.filter_by(email=email).first()
 
-    user = User.query.filter_by(email = email).first()
-
-    if user is None:
-        return jsonify({
-            "error" : "Unauthorized"
-        }), 401
+        if user_exist and bcrypt.check_password_hash(user_exist.password, password):
+            access_token = create_access_token(identity = user_exist.id)
+            return {'access_token' : access_token},200            
     
-    if not bcrypt.check_password_hash(user.password,password=password):
-         return jsonify({
-            "error" : "Unauthorized"
-        }), 401
+        return {'Message' : 'Invalid Creds.'},401
     
-    session["user_id"] = user.id
-    session.permanent = True
-    return jsonify({
-        "id" : user.id,
-        "email" : user.email
-    })
+
+class UserProfile(Resource):
+    @jwt_required()
+    def get(self):
+        current_user_id = get_jwt_identity()
+        return{
+            'Message' : f'Current User id {current_user_id}'
+        },200
+    
+api.add_resource(UserRegistration,'/register')
+api.add_resource(UserLogin,'/login')
+api.add_resource(UserProfile,'/profile')
+
 
 if __name__ == "__main__":
     app.run(debug=True,port=5000)
