@@ -20,7 +20,7 @@ const AuthForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const endpoint = isLogin ? '/login' : '/register';
-    
+
     try {
       const response = await fetch(`http://127.0.0.1:5000${endpoint}`, {
         method: 'POST',
@@ -30,11 +30,6 @@ const AuthForm = () => {
         credentials: 'include',
         body: JSON.stringify(formData),
       });
-      
-      if (response.status === 409) {
-        showToast('Email already exists', 'error');
-        return;
-      }
 
       const data = await response.json();
       if (response.ok) {
@@ -42,12 +37,16 @@ const AuthForm = () => {
           isLogin ? 'Successfully logged in!' : 'Account created successfully!',
           'success'
         );
-        localStorage.setItem('userData', JSON.stringify(data));
+
+        if (isLogin && data.access_token) {
+          localStorage.setItem('access_token', data.access_token);
+        }
+
         setTimeout(() => {
           navigate('/home');
         }, 1500);
       } else {
-        showToast(data.error || 'Something went wrong', 'error');
+        showToast(data.Message || 'Something went wrong', 'error');
       }
     } catch (error) {
       showToast('Network error occurred', 'error');
@@ -66,21 +65,19 @@ const AuthForm = () => {
       <div className="auth-left">
         <div className="auth-box">
           <div className="logo">RESUMAI.</div>
-          <h2>Sign Up</h2>
+          <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
           <form onSubmit={handleSubmit}>
             {!isLogin && (
-              <>
-                <div className="form-group">
-                  <input
-                    type="text"
-                    name="fullName"
-                    placeholder="Full Name"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    required={!isLogin}
-                  />
-                </div>
-              </>
+              <div className="form-group">
+                <input
+                  type="text"
+                  name="fullName"
+                  placeholder="Full Name"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             )}
             <div className="form-group">
               <input
@@ -114,19 +111,6 @@ const AuthForm = () => {
           </p>
         </div>
       </div>
-      <div className="auth-right">
-        <div className="welcome-content">
-          <div className="logo">RESUMAI.</div>
-          <h1>Hello, Friend!</h1>
-          <p>Join us and let AI help you analyze and improve your resume.</p>
-          <div className="social-links">
-            <a href="#" className="social-link">f</a>
-            <a href="#" className="social-link">t</a>
-            <a href="#" className="social-link">g</a>
-            <a href="#" className="social-link">in</a>
-          </div>
-        </div>
-      </div>
       {toast.show && (
         <Toast
           message={toast.message}
@@ -138,4 +122,4 @@ const AuthForm = () => {
   );
 };
 
-export default AuthForm; 
+export default AuthForm;

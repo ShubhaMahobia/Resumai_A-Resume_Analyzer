@@ -10,6 +10,8 @@ from routes import initialize_routes  # Import routes function
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
 
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+
 # Initialize extensions
 bcrypt = Bcrypt(app)
 db.init_app(app)
