@@ -8,3 +8,5 @@ flask_restful
 flask_jwt_extended
 flask_Restful
 flask-mail
+pyPDF2
+nltk

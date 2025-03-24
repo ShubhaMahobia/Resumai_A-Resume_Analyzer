@@ -51,3 +51,5 @@ class Resume(db.Model):
     match_score = db.Column(db.Numeric(5, 2), nullable=True)  # Decimal(5,2) for precision
     status = db.Column(db.String(20), default='Pending')  # Pending, Reviewed, Shortlisted
     is_deleted = db.Column(db.Boolean, default=False)
+
+
