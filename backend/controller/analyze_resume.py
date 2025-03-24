@@ -3,6 +3,10 @@ import json
 from models.models import db,Resume
 from flask import request, jsonify
 from controller.resume_contoller import ResumeController
+from flask import request, jsonify
+from flask_restful import Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from models.models import db, Job 
 class ResumeNER:
     def __init__(self):
         self.nlp = spacy.load("en_core_web_sm")
@@ -66,3 +70,29 @@ class ResumeNER:
 
         db.session.add(new_resume)
         db.session.commit()
+
+# class JobDetails():
+#     @jwt_required()
+#     def get(self):
+#         job_id = request.args.get('job_id')
+#         # Fetch job details
+#         job = Job.query.filter_by(id=job_id).first()
+#         if not job:
+#             return {"message": "Job not found"}, 404
+
+#         # Fetch all resumes related to this job
+#         resumes = Resume.query.filter_by(job_id=job_id).all()
+
+#         # Format response
+#         response_data = {
+#             "job_id": job.id,
+#             "job_title": job.job_title,
+#             "job_description": job.job_description,
+#             "key_skills": job.key_skills.split(", "),
+#             "resumes": [
+#                 {"user_id": r.user_id, "resume_text": r.extracted_text}
+#                 for r in resumes
+#             ],
+#         }
+#         return jsonify(response_data)
+
