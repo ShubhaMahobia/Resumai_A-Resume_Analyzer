@@ -71,3 +71,4 @@ class ResumeController:
         lemmatized_tokens = [word_lemmatizer.lemmatize(token) for token in tokens]
 
         return lemmatized_tokens
+    

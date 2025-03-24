@@ -10,3 +10,5 @@ flask_Restful
 flask-mail
 pyPDF2
 nltk
+spacy
+

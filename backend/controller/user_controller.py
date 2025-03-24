@@ -2,8 +2,8 @@ from flask import request, jsonify
 from flask_restful import Resource
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models.models import db, User
-from models.models import Resume
+from models.models import db, User, Resume
+from controller.analyze_resume import ResumeNER
 from datetime import datetime
 import os
 UPLOAD_FOLDER = "uploads"
@@ -74,11 +74,8 @@ class ResumeUpload(Resource):
 
         # Get Current User ID from JWT
         current_user_id = get_jwt_identity()
-
-        # Save to Database
-        new_resume = Resume(user_id=current_user_id, job_id=job_id, file_path=file_path)
-        db.session.add(new_resume)
-        db.session.commit()
+        resume_analyzer = ResumeNER()
+        resume_analyzer.process_resume(file_path,current_user_id,job_id)
 
         return  {
             "message": "Resume uploaded successfully!"

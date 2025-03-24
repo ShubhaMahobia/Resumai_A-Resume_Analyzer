@@ -46,10 +46,16 @@ class Resume(db.Model):
     user_id = db.Column(db.String(32), db.ForeignKey('users.id'), nullable=False)
     job_id = db.Column(db.String(32), db.ForeignKey('jobs.id'), nullable=False)
     file_path = db.Column(db.String(255), nullable=False)
-    extracted_text = db.Column(db.Text, nullable=True)
+    extracted_text = db.Column(db.Text, nullable=True)  # Raw text
+    processed_text = db.Column(db.Text, nullable=True)  # Preprocessed text
+    extracted_skills = db.Column(db.JSON, nullable=True)  # List of skills
+    extracted_education = db.Column(db.JSON, nullable=True)  # List of education details
+    extracted_experience = db.Column(db.JSON, nullable=True)  # Work experience details
+    extracted_certifications = db.Column(db.JSON, nullable=True)  # Certifications
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
-    match_score = db.Column(db.Numeric(5, 2), nullable=True)  # Decimal(5,2) for precision
-    status = db.Column(db.String(20), default='Pending')  # Pending, Reviewed, Shortlisted
+    match_score = db.Column(db.Numeric(5, 2), nullable=True)  # Match score
+    status = db.Column(db.String(20), default='Pending')  # Status: Pending, Reviewed, Shortlisted
     is_deleted = db.Column(db.Boolean, default=False)
+
 
 
