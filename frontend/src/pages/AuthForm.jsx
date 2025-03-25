@@ -1,146 +1,148 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import 'boxicons';
 import './AuthForm.css';
-import Toast from '../components/Toast';
-import 'boxicons'
-
-
 
 const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isActive, setIsActive] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: ''
   });
-  const [toast, setToast] = useState({ show: false, message: '', type: '' });
-  const navigate = useNavigate();
 
-  const showToast = (message, type) => {
-    setToast({ show: true, message, type });
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
   };
 
-  const handleSubmit = async (e) => {
+  // Toggle between login and register
+  const handleTogglePanel = (isRegister) => {
+    setIsActive(isRegister);
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const endpoint = isLogin ? '/login' : '/register';
-
-    try {
-      const response = await fetch(`http://127.0.0.1:5000${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        showToast(
-          isLogin ? 'Successfully logged in!' : 'Account created successfully!',
-          'success'
-        );
-
-        if (isLogin && data.access_token) {
-          localStorage.setItem('access_token', data.access_token);
-        }
-
-        setTimeout(() => {
-          navigate('/home');
-        }, 1500);
-      } else {
-        showToast(data.Message || 'Something went wrong', 'error');
-      }
-    } catch (error) {
-      showToast('Network error occurred', 'error');
-    }
+    // Add your login/registration logic here
+    console.log(formData);
   };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-
-  const container = document.querySelector('.container');
-  const registerButton = document.querySelector('.register-btn');
-  const loginButton = document.querySelector('.login-btn');
-
-
-  registerButton.addEventListener('click',() =>{
-    container.classList.add('active')
-  })
-
-  loginButton.addEventListener('click',() =>{
-    container.classList.remove('active')
-  })
 
   return (
-      <div className="container">
-        <div className='form-box login' >
-          <form action="">
-            <h1>Login</h1>
-            <div className="input-box">
-               <input type="text" name="" id="" placeholder='Email' required />
-               <box-icon type='solid' name='user'></box-icon>
-            </div>
-            <div className="input-box">
-               <input type="password" name="" id="" placeholder='Password' required />
-               <box-icon type='solid' name='user'></box-icon>
-            </div>
-            <div className="forgot-link">
-              <a href="">Forgot password?</a>
-            </div>
-            <button type='submit' className='btn'>Login</button>
-            <p>or login with social Platforms</p>
-            <div className="social-icons">
-              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
-              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
-              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
-              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
-            </div>
-          </form>
-        </div>
-        <div className='form-box register' >
-          <form action="">
-            <h1>Registration</h1>
-            <div className="input-box">
-               <input type="text" name="" id="" placeholder='Full Name' required />
-               <box-icon type='solid' name='user'></box-icon>
-            </div>
-            <div className="input-box">
-               <input type="text" name="" id="" placeholder='Email' required />
-               <box-icon type='solid' name='envelope'></box-icon>
-            </div>
-            <div className="input-box">
-               <input type="password" name="" id="" placeholder='Password' required />
-               <box-icon type='solid' name='user'></box-icon>
-            </div>
-            <button type='submit' className='btn'>Register</button>
-            <p>or register with social Platforms</p>
-            <div className="social-icons">
-              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
-              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
-              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
-              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
-            </div>
-          </form>
-        </div>
-        <div className="toggle-box">
-          <div className='toggle-pannel toggle-left'>
-            <h1>Hello, Welcome!</h1>
-            <p>Don't have an account?</p>
-            <button className='btn register-btn'>Register</button>
+    <div className={`container ${isActive ? 'active' : ''}`}>
+      <div className='form-box login'>
+        <form onSubmit={handleSubmit}>
+          <h1>Login</h1>
+          <div className="input-box">
+            <input 
+              type="text" 
+              name="email" 
+              placeholder='Email' 
+              required 
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+            <box-icon type='solid' name='user'></box-icon>
           </div>
-          <div className='toggle-pannel toggle-right'>
-            <h1>Welcome! Back</h1>
-            <p>Already have an account?</p>
-            <button className='btn login-btn'>Login</button>
+          <div className="input-box">
+            <input 
+              type="password" 
+              name="password" 
+              placeholder='Password' 
+              required 
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+            <box-icon type='solid' name='lock'></box-icon>
           </div>
+          <div className="forgot-link">
+            <a href="#">Forgot password?</a>
+          </div>
+          <button type='submit' className='btn'>Login</button>
+          <p>or login with social Platforms</p>
+          {/* <div className="social-icons">
+            <a href="#"><box-icon name='google' type='logo'></box-icon></a>
+            <a href="#"><box-icon name='facebook' type='logo'></box-icon></a>
+            <a href="#"><box-icon name='twitter' type='logo'></box-icon></a>
+            <a href="#"><box-icon name='github' type='logo'></box-icon></a>
+          </div> */}
+        </form>
+      </div>
+      <div className='form-box register'>
+        <form onSubmit={handleSubmit}>
+          <h1>Registration</h1>
+          <div className="input-box">
+            <input 
+              type="text" 
+              name="fullName" 
+              placeholder='Full Name' 
+              required 
+              value={formData.fullName}
+              onChange={handleInputChange}
+            />
+            <box-icon type='solid' name='user'></box-icon>
+          </div>
+          <div className="input-box">
+            <input 
+              type="email" 
+              name="email" 
+              placeholder='Email' 
+              required 
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+            <box-icon type='solid' name='envelope'></box-icon>
+          </div>
+          <div className="input-box">
+            <input 
+              type="password" 
+              name="password" 
+              placeholder='Password' 
+              required 
+              value={formData.password}
+              onChange={handleInputChange}
+            />
+            <box-icon type='solid' name='lock'></box-icon>
+          </div>
+          <button type='submit' className='btn'>Register</button>
+          <p>or register with social Platforms</p>
+          {/* <div className="social-icons">
+            <a href="#"><box-icon name='google' type='logo'></box-icon></a>
+            <a href="#"><box-icon name='facebook' type='logo'></box-icon></a>
+            <a href="#"><box-icon name='twitter' type='logo'></box-icon></a>
+            <a href="#"><box-icon name='github' type='logo'></box-icon></a>
+          </div> */}
+        </form>
+      </div>
+      <div className="toggle-box">
+        <div className='toggle-pannel toggle-left'>
+          <h1>Hello, Welcome!</h1>
+          <p>Don't have an account?</p>
+          <button 
+            type="button" 
+            className='btn register-btn' 
+            onClick={() => handleTogglePanel(true)}
+          >
+            Register
+          </button>
+        </div>
+        <div className='toggle-pannel toggle-right'>
+          <h1>Welcome Back!</h1>
+          <p>Already have an account?</p>
+          <button 
+            type="button" 
+            className='btn login-btn' 
+            onClick={() => handleTogglePanel(false)}
+          >
+            Login
+          </button>
         </div>
       </div>
+    </div>
   );
 };
 
