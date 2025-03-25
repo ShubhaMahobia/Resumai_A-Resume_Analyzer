@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AuthForm.css';
 import Toast from '../components/Toast';
+import 'boxicons'
+
+
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -60,65 +63,84 @@ const AuthForm = () => {
     });
   };
 
+
+  const container = document.querySelector('.container');
+  const registerButton = document.querySelector('.register-btn');
+  const loginButton = document.querySelector('.login-btn');
+
+
+  registerButton.addEventListener('click',() =>{
+    container.classList.add('active')
+  })
+
+  loginButton.addEventListener('click',() =>{
+    container.classList.remove('active')
+  })
+
   return (
-    <div className="auth-container">
-      <div className="auth-left">
-        <div className="auth-box">
-          <div className="logo">RESUMAI.</div>
-          <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
-          <form onSubmit={handleSubmit}>
-            {!isLogin && (
-              <div className="form-group">
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="Full Name"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            )}
-            <div className="form-group">
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+      <div className="container">
+        <div className='form-box login' >
+          <form action="">
+            <h1>Login</h1>
+            <div className="input-box">
+               <input type="text" name="" id="" placeholder='Email' required />
+               <box-icon type='solid' name='user'></box-icon>
             </div>
-            <div className="form-group">
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+            <div className="input-box">
+               <input type="password" name="" id="" placeholder='Password' required />
+               <box-icon type='solid' name='user'></box-icon>
             </div>
-            <button type="submit" className="submit-btn">
-              {isLogin ? 'Login' : 'Register Now'}
-            </button>
+            <div className="forgot-link">
+              <a href="">Forgot password?</a>
+            </div>
+            <button type='submit' className='btn'>Login</button>
+            <p>or login with social Platforms</p>
+            <div className="social-icons">
+              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
+              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
+              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
+              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
+            </div>
           </form>
-          <p className="toggle-text">
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
-            <span onClick={() => setIsLogin(!isLogin)} className="toggle-link">
-              {isLogin ? 'Sign Up' : 'Login'}
-            </span>
-          </p>
+        </div>
+        <div className='form-box register' >
+          <form action="">
+            <h1>Registration</h1>
+            <div className="input-box">
+               <input type="text" name="" id="" placeholder='Full Name' required />
+               <box-icon type='solid' name='user'></box-icon>
+            </div>
+            <div className="input-box">
+               <input type="text" name="" id="" placeholder='Email' required />
+               <box-icon type='solid' name='envelope'></box-icon>
+            </div>
+            <div className="input-box">
+               <input type="password" name="" id="" placeholder='Password' required />
+               <box-icon type='solid' name='user'></box-icon>
+            </div>
+            <button type='submit' className='btn'>Register</button>
+            <p>or register with social Platforms</p>
+            <div className="social-icons">
+              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
+              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
+              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
+              <a href=""><box-icon name='google' type='logo' ></box-icon></a>
+            </div>
+          </form>
+        </div>
+        <div className="toggle-box">
+          <div className='toggle-pannel toggle-left'>
+            <h1>Hello, Welcome!</h1>
+            <p>Don't have an account?</p>
+            <button className='btn register-btn'>Register</button>
+          </div>
+          <div className='toggle-pannel toggle-right'>
+            <h1>Welcome! Back</h1>
+            <p>Already have an account?</p>
+            <button className='btn login-btn'>Login</button>
+          </div>
         </div>
       </div>
-      {toast.show && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast({ ...toast, show: false })}
-        />
-      )}
-    </div>
   );
 };
 
