@@ -41,7 +41,8 @@ class UserLogin(Resource):
 
         if user_exist and bcrypt.check_password_hash(user_exist.password, password):
             access_token = create_access_token(identity=user_exist.id)
-            return {'access_token': access_token}, 200
+            return {'access_token': access_token,
+                    'Role' : user_exist.role}, 200
 
         return {'Message': 'Invalid Credentials'}, 401
 

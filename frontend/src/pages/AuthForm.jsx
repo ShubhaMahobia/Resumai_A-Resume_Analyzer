@@ -3,15 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import 'boxicons';
 import './AuthForm.css';
 
+const API_BASE_URL = "http://127.0.0.1:5000";  // Change this to your backend URL if needed
+
 const AuthForm = () => {
+  const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    password: ''
+    password: '',
+    role: 0
   });
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -23,13 +28,74 @@ const AuthForm = () => {
   // Toggle between login and register
   const handleTogglePanel = (isRegister) => {
     setIsActive(isRegister);
+    setErrorMessage('');
   };
 
-  // Handle form submission
+  // API call for Registration
+  const handleRegister = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      setLoading(false);
+
+      if (response.status === 201) {
+        alert("Registration successful! Please login.");
+        setIsActive(false);
+      } else {
+        setErrorMessage(data.Message);
+      }
+    } catch (error) {
+      setLoading(false);
+      setErrorMessage("Something went wrong. Try again.");
+    }
+  };
+
+  // API call for Login
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      const data = await response.json();
+      setLoading(false);
+
+      if (response.status === 200) {
+        localStorage.setItem("access_token", data.access_token);
+        
+        if (data.role === 0) {
+          navigate("/candidate/home");
+        } else {
+          navigate("/recruiter/home"); 
+        }
+      } else {
+        alert(data.Message);
+      }
+    } catch (error) {
+      setLoading(false);
+      setErrorMessage("Something went wrong. Try again.");
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your login/registration logic here
-    console.log(formData);
+    if (isActive) {
+      handleRegister();
+    } else {
+      handleLogin();
+    }
   };
 
   return (
@@ -37,9 +103,10 @@ const AuthForm = () => {
       <div className='form-box login'>
         <form onSubmit={handleSubmit}>
           <h1>Login</h1>
+          {errorMessage && <p className="error">{errorMessage}</p>}
           <div className="input-box">
             <input 
-              type="text" 
+              type="email" 
               name="email" 
               placeholder='Email' 
               required 
@@ -62,19 +129,16 @@ const AuthForm = () => {
           <div className="forgot-link">
             <a href="#">Forgot password?</a>
           </div>
-          <button type='submit' className='btn'>Login</button>
-          <p>or login with social Platforms</p>
-          {/* <div className="social-icons">
-            <a href="#"><box-icon name='google' type='logo'></box-icon></a>
-            <a href="#"><box-icon name='facebook' type='logo'></box-icon></a>
-            <a href="#"><box-icon name='twitter' type='logo'></box-icon></a>
-            <a href="#"><box-icon name='github' type='logo'></box-icon></a>
-          </div> */}
+          <button type='submit' className='btn' disabled={loading}>
+            {loading ? "Processing..." : "Login"}
+          </button>
         </form>
       </div>
+
       <div className='form-box register'>
         <form onSubmit={handleSubmit}>
           <h1>Registration</h1>
+          {errorMessage && <p className="error">{errorMessage}</p>}
           <div className="input-box">
             <input 
               type="text" 
@@ -108,16 +172,12 @@ const AuthForm = () => {
             />
             <box-icon type='solid' name='lock'></box-icon>
           </div>
-          <button type='submit' className='btn'>Register</button>
-          <p>or register with social Platforms</p>
-          {/* <div className="social-icons">
-            <a href="#"><box-icon name='google' type='logo'></box-icon></a>
-            <a href="#"><box-icon name='facebook' type='logo'></box-icon></a>
-            <a href="#"><box-icon name='twitter' type='logo'></box-icon></a>
-            <a href="#"><box-icon name='github' type='logo'></box-icon></a>
-          </div> */}
+          <button type='submit' className='btn' disabled={loading}>
+            {loading ? "Processing..." : "Register"}
+          </button>
         </form>
       </div>
+
       <div className="toggle-box">
         <div className='toggle-pannel toggle-left'>
           <h1>Hello, Welcome!</h1>
