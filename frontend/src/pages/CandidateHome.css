@@ -161,3 +161,26 @@
     border-radius: 4px;
     margin-right: 10px;
   }
+
+
+  .water-text {
+    font-size: 50px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: url("https://i.gifer.com/2i0K.gif") repeat;
+    background-size: cover;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: waveEffect 5s infinite linear;
+    text-align: center;
+  }
+  
+  @keyframes waveEffect {
+    from {
+      background-position: 0% 50%;
+    }
+    to {
+      background-position: 100% 50%;
+    }
+  }

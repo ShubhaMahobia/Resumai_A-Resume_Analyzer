@@ -26,7 +26,7 @@ const HiiredLandingPage = () => {
       {/* Hero Section */}
       <div className="hero-section">
         <h1 className="hero-title">
-          <span>FIND.</span> <span style={{color: "#fff"}}>HIIRED.</span>  <span>THRIVE.</span>
+          <span style={{color: "#fff"}}>FIND.</span> <span className='water-text'>HIRED.</span>  <span style={{color: "#fff"}}>THRIVE.</span>
         </h1>
         <p className="hero-subtitle">
           Connect with top-tier company effortlessly. Whether you're scaling up or searching for specialized jobs roles, we've got the right job matches for your skills.

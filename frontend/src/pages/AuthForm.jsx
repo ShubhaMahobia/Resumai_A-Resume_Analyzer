@@ -76,11 +76,9 @@ const AuthForm = () => {
         localStorage.setItem("access_token", data.access_token);
         console.log(data.Role)
         
-        if (data.role === 0) {
-          console.log("IN IF")
+        if (data.Role === 0) {
           navigate("/candidate/home");
         } else {
-          console.log("IN ELSE")
           navigate("/recruiter/home"); 
         }
       } else {
