@@ -1,0 +1,169 @@
+/* styles/globals.css */
+:root {
+    --primary-green: #16a34a;
+    --secondary-green: #15803d;
+    --gray-text: #4b5563;
+    --light-background: #f3f4f6;
+  }
+  
+  body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+  
+  /* Navbar Styles */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+  }
+  
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--primary-green);
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 30px;
+  }
+  
+  .navbar-links a {
+    text-decoration: none;
+    color: var(--gray-text);
+    transition: color 0.3s ease;
+  }
+  
+  .navbar-links a:hover {
+    color: var(--primary-green);
+  }
+  
+  .signin-btn {
+    background-color: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .signin-btn:hover {
+    background-color: var(--secondary-green);
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    text-align: center;
+    padding: 80px 20px;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+  
+  .hero-title span {
+    color: var(--primary-green);
+  }
+  
+  .hero-subtitle {
+    color: var(--gray-text);
+    max-width: 800px;
+    margin: 0 auto 30px;
+  }
+  
+  .hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-secondary {
+    border: 2px solid var(--primary-green);
+    color: var(--primary-green);
+    background: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Feature Sections */
+  .features-container {
+    display: flex;
+    gap: 30px;
+    padding: 0 20px;
+  }
+  
+  .talents-section {
+    background-color: var(--primary-green);
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .resume-review {
+    background-color: var(--light-background);
+    display: flex;
+    align-items: center;
+    padding: 30px;
+    border-radius: 10px;
+    flex: 2;
+  }
+  
+  .resume-review img {
+    max-width: 300px;
+    border-radius: 10px;
+    margin-right: 30px;
+  }
+  
+  .ai-matching {
+    background-color: var(--primary-green);
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    flex: 1;
+  }
+  
+  .join-btn {
+    background-color: white;
+    color: var(--primary-green);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-top: 20px;
+  }
+  
+  .tag {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-right: 10px;
+  }

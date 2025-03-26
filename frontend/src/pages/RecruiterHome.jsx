@@ -1,12 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const RecruiterHome = () => {
 
+    const navigate = useNavigate();
 
-    const handleLogout = () => {
+const handleLogout = () => {
         localStorage.removeItem("access_token"); // Clear token
         navigate("/"); // Redirect to login
-      };
+};
   return (
     <div className="home-container">
     <button className="btn" onClick={handleLogout}>Logout</button>

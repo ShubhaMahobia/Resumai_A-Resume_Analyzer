@@ -74,11 +74,14 @@ const AuthForm = () => {
 
       if (response.status === 200) {
         localStorage.setItem("access_token", data.access_token);
+        console.log(data.Role)
         
         if (data.role === 0) {
+          console.log("IN IF")
           navigate("/candidate/home");
         } else {
-          navigate("/recruiter/home"); 
+          console.log("IN ELSE")
+          navigate("/candidate/home"); 
         }
       } else {
         alert(data.Message);
