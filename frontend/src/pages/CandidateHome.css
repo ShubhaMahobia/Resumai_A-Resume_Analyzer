@@ -20,50 +20,39 @@
   }
   
   /* Navbar Styles */
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background-color: white;
-  }
-  
-  .navbar-logo {
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-    font-size: 1.5rem;
-    color: var(--primary-green);
-  }
-  
-  .navbar-links {
-    display: flex;
-    gap: 30px;
-  }
-  
-  .navbar-links a {
-    text-decoration: none;
-    color: var(--gray-text);
-    transition: color 0.3s ease;
-  }
-  
-  .navbar-links a:hover {
-    color: var(--primary-green);
-  }
-  
-  .signin-btn {
-    background-color: var(--primary-green);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .signin-btn:hover {
-    background-color: var(--secondary-green);
-  }
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed; /* Ensures navbar stays at the top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 40px; /* Adjust horizontal padding for better spacing */
+  background-color: transparent;
+  z-index: 1000; /* Ensures it stays above other elements */
+}
+
+.navbar-logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #7494ec;
+}
+
+.signin-btn {
+  background-color: #7494ec;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signin-btn:hover {
+  background-color: #fff;
+  color: #7494ec;
+}
   
   /* Hero Section */
   .hero-section {
@@ -77,7 +66,7 @@
   }
   
   .hero-title span {
-    color: var(--primary-green);
+    color: #7494ec;
   }
   
   .hero-subtitle {
@@ -93,7 +82,7 @@
   }
   
   .btn-primary {
-    background-color: var(--primary-green);
+    background-color: #7494ec;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -101,10 +90,15 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
+
+  .btn-primary:hover{
+    background-color: #fff;
+    color: #7494ec;
+  }
   
   .btn-secondary {
     border: 2px solid var(--primary-green);
-    color: var(--primary-green);
+    color: #7494ec;
     background: none;
     padding: 12px 24px;
     border-radius: 6px;
