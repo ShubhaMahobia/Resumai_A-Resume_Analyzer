@@ -1,14 +1,26 @@
 import React from 'react';
 import '../pages/CandidateHome.css';
+import { useNavigate } from 'react-router-dom';
 
 const HiiredLandingPage = () => {
+
+  const navigate = useNavigate();
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token"); // Clear token
+    navigate("/"); // Redirect to login
+  };
+
+
+
   return (
     <div>
       <nav className="navbar">
         <div className="navbar-logo">
           <span>Resumai</span>
         </div>
-        <button className="signin-btn">Logout</button>
+        <button  onClick={handleLogout} className="signin-btn">Logout</button>
       </nav>
 
       {/* Hero Section */}
