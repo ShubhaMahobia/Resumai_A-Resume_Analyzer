@@ -81,7 +81,7 @@ const AuthForm = () => {
           navigate("/candidate/home");
         } else {
           console.log("IN ELSE")
-          navigate("/candidate/home"); 
+          navigate("/recruiter/home"); 
         }
       } else {
         alert(data.Message);

@@ -1,0 +1,102 @@
+/* Recruiter Home Page Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body, html {
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+  }
+  
+  .recruiter-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+  }
+  
+  /* Sidebar Styling */
+  .sidebar {
+    width: 250px;
+    background-color: #7494ec;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+  }
+  
+  .sidebar h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    padding: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+    text-align: center;
+  }
+  
+  .sidebar ul li:hover {
+    background-color: #fff;
+    color: #7494ec;
+  }
+  
+  /* Main Content Styling */
+  .main-content {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f6f7;
+    margin-left: 250px; /* To avoid overlapping with the fixed sidebar */
+    width: calc(100% - 250px);
+  }
+  
+  /* Job Card Styling */
+  .job-card {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .job-card h1 {
+    margin-bottom: 15px;
+  }
+  
+  .job-card p {
+    margin-bottom: 20px;
+    color: #555;
+    font-size: 18px;
+  }
+  
+  /* Button Styling */
+  .job-button {
+    padding: 12px 25px;
+    font-size: 18px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  .job-button:hover {
+    background-color: #2980b9;
+  }
+  
