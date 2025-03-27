@@ -1,0 +1,39 @@
+.job-portal-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .search-input {
+    width: 70%;
+  }
+  
+  .filter-select {
+    width: 25%;
+  }
+  
+  .job-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .job-card {
+    width: 300px; /* Set a fixed width for each job card */
+    padding: 15px;
+    text-align: center;
+  }
+  

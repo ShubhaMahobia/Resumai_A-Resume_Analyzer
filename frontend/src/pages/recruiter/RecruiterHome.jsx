@@ -1,5 +1,5 @@
 import React from "react";
-import "./RecruiterHome.css";
+import "../recruiter/RecruiterHome.css";
 import { useNavigate } from 'react-router-dom';
 
 const RecruiterHome = () => {

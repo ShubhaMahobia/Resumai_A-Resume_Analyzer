@@ -1,5 +1,5 @@
 import React from 'react';
-import '../pages/CandidateHome.css';
+import '../candidate/CandidateHome.css';
 import { useNavigate } from 'react-router-dom';
 
 const HiiredLandingPage = () => {
@@ -32,7 +32,7 @@ const HiiredLandingPage = () => {
           Connect with top-tier company effortlessly. Whether you're scaling up or searching for specialized jobs roles, we've got the right job matches for your skills.
         </p>
         <div className="hero-buttons">
-          <button className="btn-primary">Get Hired</button>
+          <button onClick={navigate("/candidate/jobs")} className="btn-primary">See Job Openings</button>
         </div>
       </div>
     </div>
