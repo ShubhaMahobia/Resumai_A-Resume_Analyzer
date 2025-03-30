@@ -2,25 +2,35 @@ from flask import request, jsonify
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.models import db, Job  # Importing Job model
+from datetime import datetime
 
 class PostJob(Resource):
     @jwt_required()
     def post(self):
         data = request.get_json()
         current_recruiter_id = get_jwt_identity()
+        
+        required_fields = ['job_title', 'job_desc', 'key_skills', 'job_type', 'job_location', 'company']
+        missing_fields = [field for field in required_fields if not data.get(field)]
 
-        job_title = data.get('job_title')
-        job_desc = data.get('job_desc')
-        key_skills = data.get('key_skills')
-
-        if not job_title or not job_desc or not key_skills:
-            return {"message": "Missing required fields"}, 400
+        if missing_fields:
+            return {
+                "message": "Missing required fieldsaa",
+                "missing_fields": missing_fields
+            }, 400
 
         new_job = Job(
-            job_title=job_title,
-            job_description=job_desc,
-            key_skills=key_skills,
-            recruiter_id=current_recruiter_id
+            id=current_recruiter_id,
+            job_title=data['job_title'],
+            job_description=data['job_desc'],
+            key_skills=data['key_skills'],
+            job_type=data['job_type'],
+            job_location=data['job_location'],
+            company=data['company'],
+            recruiter_id=current_recruiter_id,
+            created_at=datetime.utcnow(),
+            is_active=True,
+            is_deleted=False
         )
         
         db.session.add(new_job)
@@ -30,6 +40,8 @@ class PostJob(Resource):
             "message": "Job posted successfully",
             "job_id": new_job.id
         }, 201
+
+
     
 
 class GetAllJobs(Resource):
