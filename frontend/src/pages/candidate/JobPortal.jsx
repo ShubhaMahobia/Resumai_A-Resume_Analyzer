@@ -1,20 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, Button, TextField } from "@mui/material";
 import "./JobPortal.css";
-
-const jobs = [
-  { id: 1, title: "Software Engineer", company: "Google", location: "Remote", salary: "$120k", type: "Full-time" },
-  { id: 2, title: "Data Analyst", company: "Amazon", location: "New York, NY", salary: "$100k", type: "Full-time" },
-  { id: 3, title: "UX Designer", company: "Meta", location: "San Francisco, CA", salary: "$110k", type: "Contract" }
-];
+import axios from "axios";
 
 export default function JobPortal() {
+  const [jobs, setJobs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const response = await axios.get("http://127.0.0.1:5000/getAlljobs", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log(response)
+        setJobs(response.data.jobs);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
   const filteredJobs = jobs.filter((job) =>
-    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.location.toLowerCase().includes(searchQuery.toLowerCase())
+    job.job_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.recruiter_id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -33,15 +45,14 @@ export default function JobPortal() {
         <button className="signin-btn">Logout</button>
       </nav>
 
-      {/* Job List - Flexbox for Side-by-Side Display */}
       <div className="job-list">
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => (
             <Card key={job.id} className="job-card">
               <CardContent>
-                <h2 className="job-title">{job.title}</h2>
-                <p className="job-details">{job.company} - {job.location}</p>
-                <p className="job-salary">Salary Range - {job.salary}</p>
+                <h2 className="job-title">{job.job_title}</h2>
+                <p className="Company">Company : {job.company}</p>
+                <p className="job-salary">Status: {job.is_active ? 'Active' : 'Not Active'}</p>
                 <Button className="apply-button" variant="contained">Apply Now</Button>
               </CardContent>
             </Card>

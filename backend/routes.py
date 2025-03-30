@@ -10,7 +10,7 @@ def initialize_routes(api: Api):
     api.add_resource(UserProfile, '/profile')
     api.add_resource(ResumeUpload, '/resume/upload')
     api.add_resource(PostJob, '/recruiter/postjob')
-    api.add_resource(GetAllJobs, '/recruiter/getAlljobs')
+    api.add_resource(GetAllJobs, '/getAlljobs')
     api.add_resource(GetJobById, '/recruiter/job/')
     api.add_resource(GetMyJobs, '/get/my/job/')
 

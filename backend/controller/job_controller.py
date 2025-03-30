@@ -53,7 +53,10 @@ class GetAllJobs(Resource):
                     "id": job.id,
                     "job_title": job.job_title,
                     "job_description": job.job_description,
+                    "company": job.company,
+                    "job_location": job.job_location,
                     "key_skills": job.key_skills,
+                    "is_active": job.is_active,
                     "recruiter_id": job.recruiter_id,
                     "created_at": job.created_at
                 }
