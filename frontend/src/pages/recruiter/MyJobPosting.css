@@ -1,0 +1,63 @@
+.job-portal-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .search-input {
+    width: 70%;
+  }
+  
+  .filter-select {
+    width: 25%;
+  }
+  
+  .job-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .job-card {
+    width: 600; /* Make it full width */
+    max-width: 600px; /* Restrict max width */
+    padding: 20px;
+    text-align: center;
+    border-radius: 12px; /* Add rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .job-card:hover{
+    transform: scale(1.05);
+    transition: transform 0.5s ease;
+    color: #7494ec;
+  }
+
+  .apply-button:hover{
+    color: #7494ec;
+    background: white;
+  }
+
+  .navbar-search {
+    background: white;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .navbar-search:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  

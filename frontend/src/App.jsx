@@ -7,6 +7,7 @@ import RecruiterHome from './pages/recruiter/RecruiterHome'
 import ProtectedRoute from './services/ProtectedRoute'
 import JobPortal from './pages/candidate/JobPortal'
 import JobPostingForm from './pages/recruiter/JobPostingForm'
+import MyJobPosting from './pages/recruiter/MyJobPosting'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/recruiter/home" element={<RecruiterHome />} />
             <Route path="/candidate/jobs" element={<JobPortal />} />
             <Route path="/recuiter/postJob" element={<JobPostingForm />} />
+            <Route path="/recuiter/myPosting" element={<MyJobPosting />} />
           </Route>
         </Routes>
       </div>

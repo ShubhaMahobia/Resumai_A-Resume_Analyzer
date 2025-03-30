@@ -20,7 +20,6 @@ class PostJob(Resource):
             }, 400
 
         new_job = Job(
-            id=current_recruiter_id,
             job_title=data['job_title'],
             job_description=data['job_desc'],
             key_skills=data['key_skills'],
@@ -87,3 +86,33 @@ class GetJobById(Resource):
 
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
+        
+class GetMyJobs(Resource):
+    @jwt_required()
+    def get(self):
+        current_recruiter_id = get_jwt_identity()  # Get recruiter ID from JWT
+
+        jobs = Job.query.filter_by(recruiter_id=current_recruiter_id, is_deleted=False).all()
+
+        if not jobs:
+            return {"message": "No jobs found for this recruiter"}, 404
+
+        job_list = [
+            {
+                "job_id": job.id,
+                "job_title": job.job_title,
+                "job_description": job.job_description,
+                "key_skills": job.key_skills,
+                "job_type": job.job_type,
+                "job_location": job.job_location,
+                "company": job.company,
+                "created_at": job.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "is_active": job.is_active
+            }
+            for job in jobs
+        ]
+
+        return {
+            "message": "Jobs fetched successfully",
+            "jobs": job_list
+        }, 200

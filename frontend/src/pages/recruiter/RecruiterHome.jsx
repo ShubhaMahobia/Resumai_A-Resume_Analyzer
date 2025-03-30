@@ -11,6 +11,9 @@ const RecruiterHome = () => {
     localStorage.removeItem("access_token"); // Clear token
     navigate("/"); // Redirect to login
   };
+  const handleMyJobPosting = () => {
+    navigate("/recuiter/myPosting");
+  };
   
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -51,7 +54,7 @@ const RecruiterHome = () => {
       <aside className="sidebar">
         <h2>Resumai Job</h2>
         <ul>
-          <li>My Postings</li>
+          <li onClick={handleMyJobPosting} >My Postings</li>
           <li>Profile</li>
           <li onClick={handleLogout}> Logout </li>
         </ul>
