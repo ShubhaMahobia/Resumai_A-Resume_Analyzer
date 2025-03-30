@@ -61,4 +61,15 @@ class Resume(db.Model):
     is_deleted = db.Column(db.Boolean, default=False)
 
 
+class AppliedJobs(db.Model):
+    __tablename__ = "applied_jobs"
+
+    id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
+    user_id = db.Column(db.String(32), db.ForeignKey('users.id'), nullable=False)
+    job_id = db.Column(db.String(32), db.ForeignKey('jobs.id'), nullable=False)
+    resume_filename = db.Column(db.String(255), nullable=False)
+    applied_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Unique constraint to prevent duplicate applications
+    __table_args__ = (db.UniqueConstraint('user_id', 'job_id', name='unique_user_job'),)
 

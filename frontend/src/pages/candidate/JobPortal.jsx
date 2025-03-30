@@ -9,6 +9,7 @@ export default function JobPortal() {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedJobId, setSelectedJobId] = useState(null);
+  const [appliedJobs, setAppliedJobs] = useState([]); // Store job IDs of applied jobs
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -19,11 +20,29 @@ export default function JobPortal() {
         });
         setJobs(response.data.jobs);
       } catch (error) {
-        console.error("Error fetching jobs:", error);
+        console.error("[ERROR] Fetching jobs:", error);
+      }
+    };
+
+    const fetchAppliedJobs = async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const response = await axios.get("http://127.0.0.1:5000/get/applied/job", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.data.applied_jobs) {
+          const appliedJobIds = response.data.applied_jobs.map(job => job.job_id); // Extract job IDs
+          console.log("[DEBUG] Applied Jobs Fetched:", appliedJobIds);
+          setAppliedJobs(appliedJobIds);
+        }
+      } catch (error) {
+        console.error("[ERROR] Fetching applied jobs:", error);
       }
     };
 
     fetchJobs();
+    fetchAppliedJobs();
   }, []);
 
   const filteredJobs = jobs.filter((job) =>
@@ -71,8 +90,12 @@ export default function JobPortal() {
 
       alert(response.data.message);
       handleCloseDialog();
+
+      // Refresh the applied jobs list to disable the button
+      const updatedAppliedJobs = [...appliedJobs, selectedJobId];
+      setAppliedJobs(updatedAppliedJobs);
     } catch (error) {
-      console.error("Error uploading resume:", error);
+      console.error("[ERROR] Uploading resume:", error);
       alert("Failed to upload resume.");
     }
   };
@@ -105,8 +128,9 @@ export default function JobPortal() {
                   className="apply-button" 
                   variant="contained" 
                   onClick={() => handleOpenDialog(job.id)}
+                  disabled={appliedJobs.includes(job.id)} // Disable if already applied
                 >
-                  Apply Now
+                  {appliedJobs.includes(job.id) ? "Already Applied" : "Apply Now"}
                 </Button>
               </CardContent>
             </Card>

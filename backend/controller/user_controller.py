@@ -2,7 +2,7 @@ from flask import request, jsonify
 from flask_restful import Resource
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from models.models import db, User, Resume
+from models.models import db, User, Resume, AppliedJobs
 from controller.analyze_resume import ResumeNER
 from datetime import datetime
 import os
@@ -52,6 +52,7 @@ class UserProfile(Resource):
         current_user_id = get_jwt_identity()
         return {'Message': f'Current User ID: {current_user_id}'}, 200
 
+
 class ResumeUpload(Resource):
     @jwt_required()
     def put(self):
@@ -64,6 +65,14 @@ class ResumeUpload(Resource):
         if not job_id:
             return {"error": "Job id is required"}, 400
 
+        # Get Current User ID from JWT
+        current_user_id = get_jwt_identity()
+
+        # Check if the user has already applied for this job
+        existing_application = AppliedJobs.query.filter_by(user_id=current_user_id, job_id=job_id).first()
+        if existing_application:
+            return {"error": "You have already applied for this job"}, 400
+
         # Generate Unique Filename
         unique_file_name = str(datetime.now().timestamp()).replace(".", "")
         ext = file.filename.split(".")[-1]
@@ -73,11 +82,51 @@ class ResumeUpload(Resource):
         file_path = os.path.join(UPLOAD_FOLDER, final_filename)
         file.save(file_path)
 
-        # Get Current User ID from JWT
-        current_user_id = get_jwt_identity()
-        resume_analyzer = ResumeNER()
-        resume_analyzer.process_resume(file_path,current_user_id,job_id)
+        # Save application record in the database
+        new_application = AppliedJobs(
+            user_id=current_user_id,
+            job_id=job_id,
+            resume_filename=final_filename
+        )
+        db.session.add(new_application)
+        db.session.commit()
 
-        return  {
+        # Process resume (if needed)
+        resume_analyzer = ResumeNER()
+        resume_analyzer.process_resume(file_path, current_user_id, job_id)
+
+        return {
             "message": "Resume uploaded successfully!"
-        }, 201  
+        }, 201
+
+class FetchAppliedJobs(Resource):
+    @jwt_required()
+    def get(self):
+        try:
+            # Get the current user ID from JWT
+            current_user_id = get_jwt_identity()
+            print(f"[DEBUG] Fetching applied jobs for User ID: {current_user_id}")
+
+            # Query applied jobs for the user
+            applied_jobs = AppliedJobs.query.filter_by(user_id=current_user_id).all()
+
+            if not applied_jobs:
+                print(f"[DEBUG] No applied jobs found for User {current_user_id}")
+                return {"message": "No applied jobs found"}, 404
+
+            # Formatting response
+            job_list = []
+            for job in applied_jobs:
+                job_info = {
+                    "job_id": job.job_id,
+                    "resume_filename": job.resume_filename,
+                    "applied_at": job.applied_at.strftime("%Y-%m-%d %H:%M:%S")  # Formatting timestamp
+                }
+                job_list.append(job_info)
+
+            print(f"[DEBUG] Found {len(job_list)} applied jobs for User {current_user_id}")
+            return {"applied_jobs": job_list}, 200
+
+        except Exception as e:
+            print(f"[ERROR] Exception Occurred: {str(e)}")  # Debugging error message
+            return {"error": str(e)}, 500
