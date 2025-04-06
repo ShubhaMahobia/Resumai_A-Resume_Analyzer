@@ -3,7 +3,7 @@ from flask_restful import Resource
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from models.models import db, User, Resume, AppliedJobs
-from controller.analyze_resume import ResumeNER
+from controller.resume_contoller import ResumeProcessor
 from datetime import datetime
 import os
 UPLOAD_FOLDER = "uploads"
@@ -53,9 +53,10 @@ class UserProfile(Resource):
         return {'Message': f'Current User ID: {current_user_id}'}, 200
 
 
-class ResumeUpload(Resource):
+class ResumeUploadResource(Resource):
     @jwt_required()
-    def put(self):
+    def post(self):
+        """Endpoint for uploading and processing a resume"""
         if "resume" not in request.files:
             return {"error": "No file uploaded"}, 400
 
@@ -67,38 +68,12 @@ class ResumeUpload(Resource):
 
         # Get Current User ID from JWT
         current_user_id = get_jwt_identity()
-
-        # Check if the user has already applied for this job
-        existing_application = AppliedJobs.query.filter_by(user_id=current_user_id, job_id=job_id).first()
-        if existing_application:
-            return {"error": "You have already applied for this job"}, 400
-
-        # Generate Unique Filename
-        unique_file_name = str(datetime.now().timestamp()).replace(".", "")
-        ext = file.filename.split(".")[-1]
-        final_filename = f"{unique_file_name}.{ext}"
-
-        # Save File
-        file_path = os.path.join(UPLOAD_FOLDER, final_filename)
-        file.save(file_path)
-
-        # Save application record in the database
-        new_application = AppliedJobs(
-            user_id=current_user_id,
-            job_id=job_id,
-            resume_filename=final_filename
-        )
-        db.session.add(new_application)
-        db.session.commit()
-
-        # Process resume (if needed)
-        resume_analyzer = ResumeNER()
-        resume_analyzer.process_resume(file_path, current_user_id, job_id)
-
-        return {
-            "message": "Resume uploaded successfully!"
-        }, 201
-
+        
+        # Process resume through the pipeline
+        processor = ResumeProcessor()
+        result, status_code = processor.process_resume(file, current_user_id, job_id)
+        
+        return result, status_code
 class FetchAppliedJobs(Resource):
     @jwt_required()
     def get(self):

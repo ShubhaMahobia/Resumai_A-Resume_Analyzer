@@ -81,7 +81,7 @@ export default function JobPortal() {
 
     try {
       const token = localStorage.getItem("access_token");
-      const response = await axios.put("http://127.0.0.1:5000/resume/upload", formData, {
+      const response = await axios.post("http://127.0.0.1:5000/resume/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
