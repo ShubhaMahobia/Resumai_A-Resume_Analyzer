@@ -12,7 +12,7 @@ const AuthForm = () => {
     fullName: '',
     email: '',
     password: '',
-    role: 1
+    role: 0
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);

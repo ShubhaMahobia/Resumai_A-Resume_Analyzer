@@ -5,6 +5,8 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from models.models import db, User, Resume, AppliedJobs
 from controller.resume_contoller import ResumeProcessor
 from datetime import datetime
+import PyPDF2
+import tempfile
 import os
 UPLOAD_FOLDER = "uploads"
 bcrypt = Bcrypt()
@@ -56,7 +58,6 @@ class UserProfile(Resource):
 class ResumeUploadResource(Resource):
     @jwt_required()
     def post(self):
-        """Endpoint for uploading and processing a resume"""
         if "resume" not in request.files:
             return {"error": "No file uploaded"}, 400
 
@@ -64,16 +65,33 @@ class ResumeUploadResource(Resource):
         job_id = request.form.get("job_id")
 
         if not job_id:
-            return {"error": "Job id is required"}, 400
+            return {"error": "Job ID is required"}, 400
 
-        # Get Current User ID from JWT
         current_user_id = get_jwt_identity()
-        
-        # Process resume through the pipeline
-        processor = ResumeProcessor()
-        result, status_code = processor.process_resume(file, current_user_id, job_id)
-        
-        return result, status_code
+
+        try:
+            # Save uploaded file to a temporary file
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                temp_file.write(file.read())
+                temp_path = temp_file.name
+
+            # Extract text from the temporary PDF
+            text = ""
+            with open(temp_path, "rb") as pdf_file:
+                reader = PyPDF2.PdfReader(pdf_file)
+                for page in reader.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text
+
+            # Cleanup temp file
+            os.remove(temp_path)
+            # Process resume through the pipeline with extracted text
+            ResumeProcessor.process_resume(extracted_text=text,user_id=current_user_id,job_id="dc50c7550a19433dafcadc21e2934d3f")
+
+
+        except Exception as e:
+            return {"error": f"Error processing resume: {str(e)}"}, 500
 class FetchAppliedJobs(Resource):
     @jwt_required()
     def get(self):

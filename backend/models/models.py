@@ -45,19 +45,30 @@ class Job(db.Model):
 # ---------------------------- RESUME MODEL ---------------------------- #
 class Resume(db.Model):
     __tablename__ = "resumes"
+
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
     user_id = db.Column(db.String(32), db.ForeignKey('users.id'), nullable=False)
     job_id = db.Column(db.String(32), db.ForeignKey('jobs.id'), nullable=False)
-    file_path = db.Column(db.String(255), nullable=False)
-    extracted_text = db.Column(db.Text, nullable=True)  # Raw text
-    processed_text = db.Column(db.Text, nullable=True)  # Preprocessed text
-    extracted_skills = db.Column(db.JSON, nullable=True)  # List of skills
-    extracted_education = db.Column(db.JSON, nullable=True)  # List of education details
-    extracted_experience = db.Column(db.JSON, nullable=True)  # Work experience details
-    extracted_certifications = db.Column(db.JSON, nullable=True)  # Certifications
+    
+    # Raw & Preprocessed text
+    extracted_text = db.Column(db.Text, nullable=True)
+    processed_text = db.Column(db.Text, nullable=True)
+
+    # Structured Information
+    personal_info = db.Column(db.JSON, nullable=True)  # { name, email, github, linkedin, other_links }
+    extracted_skills = db.Column(db.JSON, nullable=True)  # [ "Python", "Flask" ]
+    extracted_experience = db.Column(db.JSON, nullable=True)  # [{ company, tenure, roles_and_responsibilities }]
+    extracted_projects = db.Column(db.JSON, nullable=True)  # [{ skills_used, description }]
+    extracted_certifications = db.Column(db.JSON, nullable=True)  # [{ name, offered_by }]
+    extracted_education = db.Column(db.JSON, nullable=True)  # Optional, if still used
+    
+    # Similarity scores with job
+    description_similarity = db.Column(db.Float, nullable=True)  # Experience vs job description similarity
+    skills_similarity = db.Column(db.Float, nullable=True)  # Skills vs job skills similarity
+    projects_similarity = db.Column(db.Float, nullable=True)  # Projects vs job skills similarity
+    overall_similarity = db.Column(db.Float, nullable=True)  # Overall weighted similarity score
+    
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
-    match_score = db.Column(db.Numeric(5, 2), nullable=True)  # Match score
-    status = db.Column(db.String(20), default='Pending')  # Status: Pending, Reviewed, Shortlisted
     is_deleted = db.Column(db.Boolean, default=False)
 
 
@@ -65,11 +76,18 @@ class AppliedJobs(db.Model):
     __tablename__ = "applied_jobs"
 
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
-    user_id = db.Column(db.String(32), db.ForeignKey('users.id'), nullable=False)
-    job_id = db.Column(db.String(32), db.ForeignKey('jobs.id'), nullable=False)
-    resume_filename = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.String(32), db.ForeignKey('users.id'), nullable=False, index=True) # The applicant (Candidate)
+    job_id = db.Column(db.String(32), db.ForeignKey('jobs.id'), nullable=False, index=True) # The job applied for
+    resume_id = db.Column(db.String(32), db.ForeignKey('resumes.id'), nullable=False) # The specific resume used for this application
     applied_at = db.Column(db.DateTime, default=datetime.utcnow)
+    match_score = db.Column(db.Numeric(5, 2), nullable=True, index=True) # The calculated similarity score!
+    status = db.Column(db.String(20), default='Pending', nullable=False, index=True) # e.g., Pending, Reviewed, Shortlisted, Rejected
+    # is_deleted could be added if applications can be withdrawn/deleted
 
-    # Unique constraint to prevent duplicate applications
-    __table_args__ = (db.UniqueConstraint('user_id', 'job_id', name='unique_user_job'),)
+    # Relationships
+    applicant = db.relationship('User', backref=db.backref('applications', lazy=True))
+    job = db.relationship('Job', backref=db.backref('applications', lazy=True))
+    resume_used = db.relationship('Resume', backref=db.backref('applications', lazy=True))
 
+    # Unique constraint: A user can apply to a specific job only once.
+    __table_args__ = (db.UniqueConstraint('user_id', 'job_id', name='unique_user_job_application'),)
