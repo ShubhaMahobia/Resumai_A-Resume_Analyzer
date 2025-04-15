@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Card, CardContent, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress } from "@mui/material";
 import axios from "axios";
 import "./JobPortal.css";
 
@@ -10,6 +10,8 @@ export default function JobPortal() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [appliedJobs, setAppliedJobs] = useState([]); // Store job IDs of applied jobs
+  const [isUploading, setIsUploading] = useState(false); // Track upload status
+  const [uploadResult, setUploadResult] = useState(null); // Store match results
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -61,6 +63,7 @@ export default function JobPortal() {
     setOpenDialog(false);
     setSelectedFile(null);
     setSelectedJobId(null);
+    setUploadResult(null);
   };
 
   // Handle file selection
@@ -75,6 +78,9 @@ export default function JobPortal() {
       return;
     }
 
+    setIsUploading(true); // Start loading state
+    setUploadResult(null); // Reset any previous results
+
     const formData = new FormData();
     formData.append("resume", selectedFile);
     formData.append("job_id", selectedJobId);
@@ -88,16 +94,44 @@ export default function JobPortal() {
         },
       });
 
-      alert(response.data.message);
-      handleCloseDialog();
-
+      // Store the match details for display
+      setUploadResult(response.data.match_details || { message: response.data.message });
+      
       // Refresh the applied jobs list to disable the button
       const updatedAppliedJobs = [...appliedJobs, selectedJobId];
       setAppliedJobs(updatedAppliedJobs);
+      
+      // Only close dialog if no detailed results to show
+      if (!response.data.match_details) {
+        handleCloseDialog();
+      }
     } catch (error) {
       console.error("[ERROR] Uploading resume:", error);
       alert("Failed to upload resume.");
+    } finally {
+      setIsUploading(false); // End loading state regardless of success/failure
     }
+  };
+
+  // Render match details if available
+  const renderMatchDetails = () => {
+    if (!uploadResult) return null;
+    
+    return (
+      <div className="match-results">
+        <h3>Resume Match Results</h3>
+        {uploadResult.match_score && (
+          <p><strong>Match Score:</strong> {uploadResult.match_score.toFixed(1)}%</p>
+        )}
+        {uploadResult.skills_match && (
+          <p><strong>Skills Match:</strong> {uploadResult.skills_match.toFixed(1)}%</p>
+        )}
+        {uploadResult.domain_match_level && (
+          <p><strong>Domain Match Level:</strong> {uploadResult.domain_match_level}</p>
+        )}
+        <p className="success-message">Your application has been submitted successfully!</p>
+      </div>
+    );
   };
 
   return (
@@ -142,15 +176,34 @@ export default function JobPortal() {
 
       {/* Upload Resume Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Upload Resume</DialogTitle>
+        <DialogTitle>{uploadResult ? "Application Results" : "Upload Resume"}</DialogTitle>
         <DialogContent>
-          <input type="file" onChange={handleFileChange} accept=".pdf,.doc,.docx" />
+          {uploadResult ? (
+            renderMatchDetails()
+          ) : (
+            <input 
+              type="file" 
+              onChange={handleFileChange} 
+              accept=".pdf,.doc,.docx" 
+              disabled={isUploading} 
+            />
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSubmitResume} variant="contained" color="primary">
-            Submit
+          <Button onClick={handleCloseDialog}>
+            {uploadResult ? "Close" : "Cancel"}
           </Button>
+          {!uploadResult && (
+            <Button 
+              onClick={handleSubmitResume} 
+              variant="contained" 
+              color="primary"
+              disabled={isUploading || !selectedFile} // Disable if uploading or no file selected
+              startIcon={isUploading ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+              {isUploading ? "Processing..." : "Submit"}
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </div>

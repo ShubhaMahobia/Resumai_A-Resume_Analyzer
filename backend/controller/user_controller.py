@@ -86,9 +86,18 @@ class ResumeUploadResource(Resource):
 
             # Cleanup temp file
             os.remove(temp_path)
-            # Process resume through the pipeline with extracted text
-            ResumeProcessor.process_resume(extracted_text=text,user_id=current_user_id,job_id="dc50c7550a19433dafcadc21e2934d3f")
-
+            
+            # Process resume through the pipeline and get the results
+            result = ResumeProcessor.process_resume(extracted_text=text,user_id=current_user_id,job_id=job_id)
+            
+            # Check if processing returned an error message
+            if isinstance(result, dict) and result.get("Message", "").startswith("Error"):
+                 return {"error": result.get("Message", "Unknown processing error")}, 500
+            
+            return {
+                "message": "Resume uploaded and processed successfully",
+                "match_details": result # Return the detailed match results
+            }, 200
 
         except Exception as e:
             return {"error": f"Error processing resume: {str(e)}"}, 500
@@ -112,7 +121,6 @@ class FetchAppliedJobs(Resource):
             for job in applied_jobs:
                 job_info = {
                     "job_id": job.job_id,
-                    "resume_filename": job.resume_filename,
                     "applied_at": job.applied_at.strftime("%Y-%m-%d %H:%M:%S")  # Formatting timestamp
                 }
                 job_list.append(job_info)
