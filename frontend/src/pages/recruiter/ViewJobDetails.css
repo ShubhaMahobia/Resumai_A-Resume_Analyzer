@@ -1,28 +1,34 @@
 :root {
-  --primary: #6d5dfc;
-  --primary-light: #8677f9;
-  --primary-dark: #5e4fc1;
-  --background: #f5f9ff;
-  --background-card: #ffffff;
-  --text-primary: #2c2c2c;
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
-  --accent: #10b981;
-  --accent-hover: #0ea271;
-  --error: #ef4444;
+  --primary: #7494ec;
+  --primary-light: #7494ec;
+  --primary-dark: #5b77c7;
+  --background: #e2e2e2;
+  --background-card: #eee;
+  --text-primary: #333;
+  --text-secondary: #555;
+  --text-tertiary: #888;
+  --accent: #7494ec;
+  --accent-hover: #5b77c7;
+  --error: #ff6b6b;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 0 20px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+body {
+  background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
+  padding-top: 20px;
+  min-height: 100vh;
 }
 
 .job-details-container {
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 2rem;
+  max-width: 1100px;
+  margin: 2rem auto 2rem;
+  padding: 2.5rem;
   background-color: var(--background-card);
-  border-radius: 16px;
-  box-shadow: var(--shadow-md);
+  border-radius: 30px;
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 
@@ -30,22 +36,25 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: transparent;
-  color: var(--primary);
-  border: 1px solid var(--primary-light);
-  padding: 0.5rem 1rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-bottom: 1.5rem;
+  margin: 0 0 2rem 0;
+  position: relative;
+  z-index: 10;
+  box-shadow: var(--shadow);
 }
 
 .back-button:hover {
-  background-color: var(--primary-light);
-  color: white;
+  background-color: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
 }
 
 .job-header {

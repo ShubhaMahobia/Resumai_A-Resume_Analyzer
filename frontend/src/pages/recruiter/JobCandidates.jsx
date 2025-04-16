@@ -35,15 +35,31 @@ const JobCandidates = () => {
 
         console.log('API Response:', response.data);
         
-        if (response.data) {
-          setCandidates(response.data.candidates || []);
+        if (response.data && response.data.candidates) {
+          // Sort candidates by match_score descending (high to low)
+          const sortedCandidates = [...response.data.candidates].sort((a, b) => {
+            // Treat null/undefined scores as lower than any number
+            const scoreA = a.match_score ?? -Infinity;
+            const scoreB = b.match_score ?? -Infinity;
+            return scoreB - scoreA; // Sort descending
+          });
+
+          setCandidates(sortedCandidates);
           setJobDetails({
             jobId: response.data.job_id,
             jobTitle: response.data.job_title,
             candidatesCount: response.data.candidates_count
           });
+        } else if (response.data) {
+          // Handle case where response exists but candidates array might be missing or null
+          setCandidates([]); 
+          setJobDetails({
+            jobId: response.data.job_id,
+            jobTitle: response.data.job_title,
+            candidatesCount: response.data.candidates_count || 0
+          });
         } else {
-          setError('Failed to fetch candidates');
+          setError('Failed to fetch candidates or invalid data format');
         }
       } catch (err) {
         console.error('Error fetching candidates:', err);

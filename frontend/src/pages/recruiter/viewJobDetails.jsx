@@ -54,7 +54,7 @@ const ViewJobDetails = () => {
   }, [id, navigate]);
 
   const goBack = () => {
-    navigate(-1);
+    navigate('/recruiter/myjobs');
   };
 
   // Format date to readable format
@@ -185,10 +185,6 @@ const ViewJobDetails = () => {
         >
           <h2>Job Summary</h2>
           <div className="summary-grid">
-            <div className="summary-item">
-              <h3>Job ID</h3>
-              <p>{job.id}</p>
-            </div>
             <div className="summary-item">
               <h3>Location</h3>
               <p>{job.job_location}</p>
