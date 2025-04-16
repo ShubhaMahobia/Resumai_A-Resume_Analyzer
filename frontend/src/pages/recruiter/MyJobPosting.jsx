@@ -1,33 +1,64 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, Button, TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./MyJobPosting.css";
 
 export default function MyJobPosting() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    
+
     const fetchJobs = async () => {
       try {
-        const token = localStorage.getItem("access_token"); // Assuming JWT token is stored here
-        const response = await axios.get("http://127.0.0.1:5000/get/my/job/", {
+        const token = localStorage.getItem("access_token"); // Using access_token instead of token
+        
+        if (!token) {
+          navigate('/');
+          return;
+        }
+        
+
+        const API_BASE_URL = "http://127.0.0.1:5000";
+        console.log("Fetching jobs with token:", token.substring(0, 10) + "...");
+        
+        const response = await axios.get(`${API_BASE_URL}/get/my/job`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setJobs(response.data.jobs);
+        
+        console.log("API Response:", response.data);
+        
+        if (response.data.jobs) {
+          setJobs(response.data.jobs);
+        } else {
+          setJobs([]);
+        }
       } catch (err) {
-        setError("Failed to fetch jobs");
+        console.error("Error fetching jobs:", err);
+        setError("Failed to fetch jobs. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchJobs();
-  }, []);
+  }, [navigate]);
+
+  const handleViewJobDetails = (jobId) => {
+    navigate(`/recruiter/job/${jobId}`);
+  };
+
+  const handleViewCandidates = (jobId) => {
+    // You can implement this functionality later
+    navigate(`/recruiter/job/${jobId}/candidates`);
+  };
 
   const filteredJobs = jobs.filter(
     (job) =>
@@ -39,7 +70,7 @@ export default function MyJobPosting() {
   return (
     <div className="job-portal-container">
       <nav className="navbar">
-        <div className="navbar-logo">
+        <div className="navbar-logo" onClick={() => navigate('/recruiter/home')}>
           <span>Resumai</span>
         </div>
         <TextField
@@ -49,12 +80,18 @@ export default function MyJobPosting() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button className="signin-btn">Logout</button>
+        <button className="signin-btn" onClick={() => {
+          localStorage.removeItem('access_token');
+          navigate('/');
+        }}>Logout</button>
       </nav>
 
       <div className="job-list">
         {loading ? (
-          <p>Loading jobs...</p>
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading jobs...</p>
+          </div>
         ) : error ? (
           <p className="error-message">{error}</p>
         ) : filteredJobs.length > 0 ? (
@@ -63,14 +100,26 @@ export default function MyJobPosting() {
               <CardContent>
                 <h2 className="job-title">{job.job_title}</h2>
                 <p className="job-details">{job.company} - {job.job_location}</p>
-                <Button className="apply-button" variant="contained">View Job Details</Button>
+                <Button 
+                  className="apply-button" 
+                  variant="contained"
+                  onClick={() => handleViewJobDetails(job.job_id)}
+                >
+                  View Job Details
+                </Button>
                 <div style={{height: '10px'}}></div>
-                <Button className="apply-button" variant="contained">View Candidates</Button>
+                <Button 
+                  className="apply-button" 
+                  variant="contained"
+                  onClick={() => handleViewCandidates(job.job_id)}
+                >
+                  View Candidates
+                </Button>
               </CardContent>
             </Card>
           ))
         ) : (
-          <p>No jobs found</p>
+          <p className="no-jobs-message">No jobs found</p>
         )}
       </div>
     </div>

@@ -120,11 +120,15 @@ class ResumeProcessor:
         resume_total_exp_str = structured_data.get('total_years_of_experience')
         experience_years_match_score = compare_years_experience(resume_total_exp_str, required_years)
         
+        # --- LLM-BASED SIMILARITY ASSESSMENT ---
+        llm_similarity_score = assess_llm_similarity(structured_data, job_description, key_skills)
+        
         # --- COMBINED SCORING (Adjusted Weights) ---
         # Weights for score components
-        semantic_weight = 0.4
-        keyword_weight = 0.5
+        semantic_weight = 0.3
+        keyword_weight = 0.35
         experience_years_weight = 0.1
+        llm_weight = 0.25  # Add weight for LLM assessment
         
         # Component weights (within semantic/keyword scores)
         experience_desc_weight = 0.4 # Weight for experience description vs job description
@@ -148,7 +152,8 @@ class ResumeProcessor:
         final_similarity = (
             semantic_score * semantic_weight +
             keyword_score * keyword_weight +
-            experience_years_match_score * experience_years_weight
+            experience_years_match_score * experience_years_weight +
+            llm_similarity_score * llm_weight
         )
         
         # Apply penalty for very low keyword matches in skills (Domain Mismatch)
@@ -160,7 +165,7 @@ class ResumeProcessor:
         # Ensure score is within 0-1 range
         final_similarity = max(0.0, min(1.0, final_similarity))
         
-        print(f"Semantic Score: {semantic_score:.2f}, Keyword Score: {keyword_score:.2f}, Exp Years Score: {experience_years_match_score:.2f}")
+        print(f"Semantic Score: {semantic_score:.2f}, Keyword Score: {keyword_score:.2f}, Exp Years Score: {experience_years_match_score:.2f}, LLM Score: {llm_similarity_score:.2f}")
         print(f"Final similarity: {final_similarity * 100:.2f}%")
 
         try:
@@ -179,6 +184,7 @@ class ResumeProcessor:
                 description_similarity=resume_description_similarity,
                 skills_similarity=resume_skills_similarity,
                 projects_similarity=resume_projects_similarity,
+                llm_similarity=llm_similarity_score,  # Add the LLM similarity score
                 overall_similarity=final_similarity
             )
             
@@ -246,6 +252,102 @@ def format_projects(projects_list):
             skills = ' '.join(skills)
             
         formatted_text += f"{title} {skills} {description} "
+    
+    return formatted_text.strip()
+
+def assess_llm_similarity(resume_data, job_description, job_skills):
+    """
+    Use LLM to assess the similarity between resume and job requirements.
+    
+    Args:
+        resume_data: Structured resume data
+        job_description: Job description text
+        job_skills: Job required skills
+        
+    Returns:
+        float: Similarity score between 0 and 1
+    """
+    try:
+        # Format resume data for prompt
+        experience_text = format_experience(resume_data.get('experience', []))
+        skills_text = format_skills(resume_data.get('skills', []))
+        projects_text = format_projects(resume_data.get('projects', []))
+        education_text = format_education(resume_data.get('education', []))
+        total_experience = resume_data.get('total_years_of_experience', 'Not specified')
+        
+        # Create the prompt for LLM
+        prompt = f"""
+You are an expert AI recruiter tasked with evaluating how well a candidate's resume matches a job description.
+
+Job Description:
+```
+{job_description}
+```
+
+Required Skills:
+```
+{job_skills}
+```
+
+Candidate's Information:
+- Skills: {skills_text}
+- Experience: {experience_text}
+- Projects: {projects_text}
+- Education: {education_text}
+- Total Years of Experience: {total_experience}
+
+Based on the detailed analysis of:
+1. Skills match (technical and soft skills)
+2. Relevant experience match
+3. Project relevance to the job
+4. Education qualifications
+5. Years of experience
+6. Overall fit for the role
+
+Rate the candidate's match with the job on a scale of 0 to 1, where:
+- 0.0-0.2: Poor match
+- 0.3-0.5: Below average match
+- 0.6-0.7: Average match
+- 0.8-0.9: Good match
+- 1.0: Perfect match
+
+Provide ONLY a single number between 0 and 1 (to two decimal places) as your response.
+"""
+
+        # Call the LLM
+        response = model.generate_content(prompt)
+        result = response.text.strip()
+        
+        # Extract the score from the response
+        match = re.search(r'(\d+\.\d+)', result)
+        if match:
+            score = float(match.group(1))
+            # Ensure score is within 0-1 range
+            return max(0.0, min(1.0, score))
+        else:
+            # If no match found, extract first decimal number or default to 0.5
+            try:
+                score = float(result)
+                return max(0.0, min(1.0, score))
+            except:
+                print(f"Could not parse LLM similarity score from: {result}")
+                return 0.5
+    except Exception as e:
+        print(f"Error in assess_llm_similarity: {str(e)}")
+        return 0.5  # Return a neutral score in case of error
+
+def format_education(education_list):
+    """Format education data as text"""
+    if not education_list:
+        return ""
+    
+    formatted_text = ""
+    for edu in education_list:
+        degree = edu.get('degree', '')
+        institution = edu.get('institution', '')
+        year = edu.get('year', '')
+        
+        formatted_text += f"{degree} from {institution} {year} "
     
     return formatted_text.strip()
 

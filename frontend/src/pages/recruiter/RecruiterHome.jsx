@@ -12,7 +12,7 @@ const RecruiterHome = () => {
     navigate("/"); // Redirect to login
   };
   const handleMyJobPosting = () => {
-    navigate("/recuiter/myPosting");
+    navigate("/recruiter/myjobs");
   };
   
   const handleOpenDialog = () => {

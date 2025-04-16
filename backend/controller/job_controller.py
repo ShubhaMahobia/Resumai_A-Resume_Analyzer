@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.models import db, Job  # Importing Job model
+from models.models import db, Job, AppliedJobs, User, Resume  # Importing Job model and related models
 from datetime import datetime
 
 class PostJob(Resource):
@@ -69,9 +69,8 @@ class GetAllJobs(Resource):
         
 class GetJobById(Resource):
     @jwt_required()
-    def get(self):
+    def get(self, job_id):
         try:
-            job_id = request.args.get('job_id')
             job = Job.query.get(job_id)
 
             if not job:
@@ -119,3 +118,59 @@ class GetMyJobs(Resource):
             "message": "Jobs fetched successfully",
             "jobs": job_list
         }, 200
+
+class GetJobCandidates(Resource):
+    @jwt_required()
+    def get(self, job_id):
+        try:
+            # Get the current recruiter ID from JWT
+            current_recruiter_id = get_jwt_identity()
+            
+            # Check if the job belongs to the current recruiter
+            job = Job.query.filter_by(id=job_id, recruiter_id=current_recruiter_id).first()
+            
+            if not job:
+                return {"message": "Job not found or you don't have permission to view candidates"}, 404
+            
+            # Query all applications for this job
+            applications = AppliedJobs.query.filter_by(job_id=job_id).all()
+            
+            if not applications:
+                return {
+                    "job_id": job_id,
+                    "job_title": job.job_title,
+                    "candidates_count": 0,
+                    "candidates": []
+                }, 200
+            
+            # Prepare candidate data
+            candidates = []
+            for app in applications:
+                # Get user details
+                user = User.query.get(app.user_id)
+                # Get resume details
+                resume = Resume.query.get(app.resume_id)
+                
+                if user and resume:
+                    candidate_info = {
+                        "application_id": app.id,
+                        "candidate_id": user.id,
+                        "candidate_name": user.fullName,
+                        "candidate_email": user.email,
+                        "application_date": app.applied_at.strftime("%Y-%m-%d %H:%M:%S"),
+                        "match_score": float(app.match_score) if app.match_score else None,
+                        "status": app.status,
+                        "resume_id": resume.id,
+                        "skills": resume.extracted_skills
+                    }
+                    candidates.append(candidate_info)
+            
+            return {
+                "job_id": job_id,
+                "job_title": job.job_title,
+                "candidates_count": len(candidates),
+                "candidates": candidates
+            }, 200
+            
+        except Exception as e:
+            return {"error": str(e)}, 500

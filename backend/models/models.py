@@ -66,6 +66,7 @@ class Resume(db.Model):
     description_similarity = db.Column(db.Float, nullable=True)  # Experience vs job description similarity
     skills_similarity = db.Column(db.Float, nullable=True)  # Skills vs job skills similarity
     projects_similarity = db.Column(db.Float, nullable=True)  # Projects vs job skills similarity
+    llm_similarity = db.Column(db.Float, nullable=True)  # LLM-generated similarity score
     overall_similarity = db.Column(db.Float, nullable=True)  # Overall weighted similarity score
     
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)

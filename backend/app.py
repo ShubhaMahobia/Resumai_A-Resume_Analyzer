@@ -11,7 +11,8 @@ import os  # Import routes function
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
 
-CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+# More permissive CORS settings for development
+CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*", "expose_headers": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]}})
 
 UPLOAD_FOLDER = "static/uploads"
 ALLOWED_EXTENSIONS = {"pdf", "docx"}
