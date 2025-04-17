@@ -173,6 +173,18 @@ const AuthForm = () => {
             />
             <box-icon type='solid' name='lock'></box-icon>
           </div>
+          <div className="role-toggle">
+            <span className={formData.role === 0 ? 'active' : ''}>Candidate</span>
+            <label className="switch">
+              <input 
+                type="checkbox" 
+                checked={formData.role === 1}
+                onChange={() => setFormData(prev => ({...prev, role: prev.role === 0 ? 1 : 0}))}
+              />
+              <span className="slider round"></span>
+            </label>
+            <span className={formData.role === 1 ? 'active' : ''}>Recruiter</span>
+          </div>
           <button type='submit' className='btn' disabled={loading}>
             {loading ? "Processing..." : "Register"}
           </button>
