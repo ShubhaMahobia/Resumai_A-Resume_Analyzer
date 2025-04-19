@@ -23,3 +23,16 @@ class ApplicationConfig:
     SESSION_COOKIE_NAME = 'session_id'
     SESSION_COOKIE_DOMAIN = None  # Allow cookies to work on localhost
     SESSION_COOKIE_PATH = '/'
+    
+    # JWT settings
+    JWT_SECRET_KEY = SECRET_KEY
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
+    
+    # Mail settings
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'True').lower() in ['true', '1', 't']
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', '')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', 'resumai.noreply@gmail.com')
+    FRONTEND_URL = os.environ.get('FRONTEND_URL')

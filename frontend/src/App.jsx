@@ -10,6 +10,7 @@ import JobPostingForm from './pages/recruiter/JobPostingForm'
 import MyJobPosting from './pages/recruiter/MyJobPosting'
 import ViewJobDetails from './pages/recruiter/ViewJobDetails'
 import JobCandidates from './pages/recruiter/JobCandidates'
+import VerifyEmail from './pages/VerifyEmail'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<AuthForm />} />
+          <Route path="/verify-email/:token" element={<VerifyEmail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/candidate/home" element={<CandidateHome />} />

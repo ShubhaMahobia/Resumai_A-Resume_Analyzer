@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from models.models import db, User, Resume, AppliedJobs
 from controller.resume_contoller import ResumeProcessor
 from datetime import datetime
+from utils.email_utils import send_welcome_email
 import PyPDF2
 import tempfile
 import os
@@ -25,10 +26,37 @@ class UserRegistration(Resource):
             return {'Message': 'User already exists with this email.'}, 400
 
         hash_pw = bcrypt.generate_password_hash(password).decode('utf-8')
-        new_user = User(fullName=fullName, email=email, password=hash_pw,role= role)
+        new_user = User(
+            fullName=fullName, 
+            email=email, 
+            password=hash_pw,
+            role=role,
+            email_verified=True  # All users are verified by default now
+        )
+        
+        # Add user to database
         db.session.add(new_user)
         db.session.commit()
-        return {'Message': 'User created Successfully'}, 201
+        
+        # Send welcome email for candidates only
+        if role == 0:  # Candidate
+            try:
+                # Send welcome email
+                send_welcome_email(new_user)
+                print(f"Welcome email sent to: {email}")
+                
+                return {
+                    'Message': 'User created successfully. Welcome email has been sent.',
+                }, 201
+            except Exception as e:
+                print(f"Error sending welcome email: {str(e)}")
+                # Return success even if email fails
+                return {
+                    'Message': 'User created successfully.',
+                }, 201
+        else:
+            # For recruiters
+            return {'Message': 'User created Successfully'}, 201
 
 class UserLogin(Resource):
     def post(self):
@@ -41,10 +69,13 @@ class UserLogin(Resource):
 
         user_exist = User.query.filter_by(email=email).first()
 
+        if not user_exist:
+            return {'Message': 'Invalid Credentials'}, 401
+
         if user_exist and bcrypt.check_password_hash(user_exist.password, password):
             access_token = create_access_token(identity=user_exist.id)
             return {'access_token': access_token,
-                    'Role' : user_exist.role}, 200
+                    'Role': user_exist.role}, 200
 
         return {'Message': 'Invalid Credentials'}, 401
 
@@ -53,7 +84,6 @@ class UserProfile(Resource):
     def get(self):
         current_user_id = get_jwt_identity()
         return {'Message': f'Current User ID: {current_user_id}'}, 200
-
 
 class ResumeUploadResource(Resource):
     @jwt_required()
@@ -101,6 +131,7 @@ class ResumeUploadResource(Resource):
 
         except Exception as e:
             return {"error": f"Error processing resume: {str(e)}"}, 500
+
 class FetchAppliedJobs(Resource):
     @jwt_required()
     def get(self):

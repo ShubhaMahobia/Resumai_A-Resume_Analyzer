@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import uuid4
+import secrets
 
 # Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -17,6 +18,7 @@ class User(db.Model):
     fullName = db.Column(db.String(40), nullable=False)
     role = db.Column(db.Integer, nullable=False)  # Candidate = 0, Recruiter = 1
     profile_completed = db.Column(db.Boolean, default=False)
+    email_verified = db.Column(db.Boolean, default=True)  # Default to True as we're not verifying emails
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_deleted = db.Column(db.Boolean, default=False)
 

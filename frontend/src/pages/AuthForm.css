@@ -321,4 +321,46 @@ input:checked + .slider:before {
     }
 }
 
+.error {
+    color: #e74c3c;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+.verification-actions {
+    margin-top: 15px;
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.verification-actions p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.resend-btn {
+    background-color: transparent;
+    color: #7494ec;
+    border: 1px solid #7494ec;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.resend-btn:hover {
+    background-color: #f0f4ff;
+}
+
+.resend-btn:disabled {
+    border-color: #ccc;
+    color: #999;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+}
+
 

@@ -74,7 +74,6 @@ const AuthForm = () => {
 
       if (response.status === 200) {
         localStorage.setItem("access_token", data.access_token);
-        console.log(data.Role)
         
         if (data.Role === 0) {
           navigate("/candidate/home");
@@ -82,7 +81,7 @@ const AuthForm = () => {
           navigate("/recruiter/home"); 
         }
       } else {
-        alert(data.Message);
+        setErrorMessage(data.Message);
       }
     } catch (error) {
       setLoading(false);
