@@ -16,6 +16,9 @@ export default function JobPortal() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState(null);
   const [viewJobDetails, setViewJobDetails] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [analyzeMode, setAnalyzeMode] = useState(false);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -71,6 +74,8 @@ export default function JobPortal() {
     setSelectedJobId(null);
     setUploadResult(null);
     setViewJobDetails(null);
+    setAnalysisResult(null);
+    setAnalyzeMode(false);
   };
 
   // Open job details view
@@ -116,6 +121,38 @@ export default function JobPortal() {
       alert("Failed to upload resume.");
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  // Analyze the resume
+  const handleAnalyzeResume = async () => {
+    if (!selectedFile) {
+      alert("Please select a resume file to analyze");
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setAnalysisResult(null);
+
+    const formData = new FormData();
+    formData.append("resume", selectedFile);
+    formData.append("job_id", selectedJobId);
+
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await axios.post("http://127.0.0.1:5000/analyze/resume/match", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setAnalysisResult(response.data.match_details);
+    } catch (error) {
+      console.error("[ERROR] Analyzing resume:", error);
+      alert("Failed to analyze resume.");
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -219,16 +256,96 @@ export default function JobPortal() {
         
         <div className="job-actions">
           <Button 
+            className="analyze-button action-button" 
+            variant="outlined"
+            onClick={() => {
+              setViewJobDetails(null);
+              setAnalyzeMode(true);
+              setSelectedJobId(viewJobDetails.id);
+              setOpenDialog(true);
+            }}
+            style={{ marginBottom: '12px' }}
+            startIcon={<FaSearch />}
+          >
+            Analyze Resume Match
+          </Button>
+          
+          <Button 
             className="apply-button action-button" 
             variant="contained" 
             onClick={() => {
               setViewJobDetails(null);
+              setAnalyzeMode(false);
               handleOpenDialog(viewJobDetails.id);
             }}
             disabled={appliedJobs.includes(viewJobDetails.id)}
             startIcon={<FaPaperPlane />}
           >
             {appliedJobs.includes(viewJobDetails.id) ? "Already Applied" : "Apply Now"}
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  // Render analysis results if available
+  const renderAnalysisResults = () => {
+    if (!analysisResult) return null;
+    
+    return (
+      <div className="analysis-results">
+        <h3>Resume Match Analysis</h3>
+        
+        {analysisResult.match_score && (
+          <div className="match-score-container">
+            <div className="match-score-circle" style={{ 
+              background: `conic-gradient(#4f46e5 ${analysisResult.match_score}%, #f3f4f6 0%)` 
+            }}>
+              <div className="match-score-inner">
+                <span>{analysisResult.match_score.toFixed(1)}%</span>
+              </div>
+            </div>
+            <p>Overall Job Match</p>
+          </div>
+        )}
+        
+        <div className="analysis-details-grid">
+          {analysisResult.skills_match && (
+            <div className="analysis-detail-item">
+              <h4>Skills Match</h4>
+              <p>{analysisResult.skills_match.toFixed(1)}%</p>
+            </div>
+          )}
+          {analysisResult.domain_match_level && (
+            <div className="analysis-detail-item">
+              <h4>Domain Match</h4>
+              <p>{analysisResult.domain_match_level}</p>
+            </div>
+          )}
+        </div>
+        
+        {analysisResult.key_matching_skills && analysisResult.key_matching_skills.length > 0 && (
+          <div className="matching-skills">
+            <h4>Your Matching Skills</h4>
+            <div className="skills-tags">
+              {analysisResult.key_matching_skills.map((skill, index) => (
+                <span key={index} className="skill-tag">{skill}</span>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        <div className="analysis-actions">
+          <Button 
+            className="apply-button" 
+            variant="contained" 
+            onClick={() => {
+              setAnalyzeMode(false);
+              setAnalysisResult(null);
+            }}
+            startIcon={<FaPaperPlane />}
+          >
+            Proceed to Apply
           </Button>
         </div>
       </div>
@@ -332,23 +449,35 @@ export default function JobPortal() {
         <DialogTitle>
           {viewJobDetails 
             ? "Job Details" 
-            : (uploadResult ? "Application Results" : "Upload Resume")}
+            : (
+                analyzeMode 
+                  ? (analysisResult ? "Resume Analysis Results" : "Analyze Resume Match") 
+                  : (uploadResult ? "Application Results" : "Upload Resume")
+              )
+          }
         </DialogTitle>
         <DialogContent>
           {viewJobDetails && renderJobDetails()}
           
-          {!viewJobDetails && uploadResult && renderMatchDetails()}
+          {!viewJobDetails && analyzeMode && analysisResult && renderAnalysisResults()}
           
-          {!viewJobDetails && !uploadResult && (
+          {!viewJobDetails && !analyzeMode && uploadResult && renderMatchDetails()}
+          
+          {!viewJobDetails && !analysisResult && !uploadResult && (
             <div className="resume-upload-container">
-              <p className="upload-instructions">Please upload your resume to apply for this position. Supported formats: PDF, DOC, DOCX</p>
+              <p className="upload-instructions">
+                {analyzeMode 
+                  ? "Upload your resume to analyze how well it matches with this job position. This will not submit an application." 
+                  : "Please upload your resume to apply for this position. Supported formats: PDF, DOC, DOCX"
+                }
+              </p>
               <div className="file-upload-area">
                 <input 
                   type="file" 
                   id="resume-upload"
                   onChange={handleFileChange} 
                   accept=".pdf,.doc,.docx" 
-                  disabled={isUploading} 
+                  disabled={isUploading || isAnalyzing} 
                   className="file-input"
                 />
                 <label htmlFor="resume-upload" className="file-label">
@@ -360,18 +489,21 @@ export default function JobPortal() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} className="dialog-btn-secondary">
-            {uploadResult ? "Close" : "Cancel"}
+            {uploadResult || analysisResult ? "Close" : "Cancel"}
           </Button>
-          {!viewJobDetails && !uploadResult && (
+          {!viewJobDetails && !uploadResult && !analysisResult && (
             <Button 
-              onClick={handleSubmitResume} 
+              onClick={analyzeMode ? handleAnalyzeResume : handleSubmitResume} 
               variant="contained" 
               color="primary"
               className="dialog-btn-primary"
-              disabled={isUploading || !selectedFile}
-              startIcon={isUploading ? <CircularProgress size={20} color="inherit" /> : null}
+              disabled={(analyzeMode && isAnalyzing) || (!analyzeMode && isUploading) || !selectedFile}
+              startIcon={(analyzeMode && isAnalyzing) || (!analyzeMode && isUploading) ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              {isUploading ? "Processing..." : "Submit Application"}
+              {analyzeMode 
+                ? (isAnalyzing ? "Analyzing..." : "Analyze Match") 
+                : (isUploading ? "Processing..." : "Submit Application")
+              }
             </Button>
           )}
         </DialogActions>

@@ -844,4 +844,100 @@
     font-size: 1.5rem;
   }
 }
+
+/* Analysis Results Styling */
+.analysis-results {
+  padding: 16px 0;
+  text-align: center;
+}
+
+.analysis-results h3 {
+  margin: 0 0 28px 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  position: relative;
+  display: inline-block;
+}
+
+.analysis-results h3::after {
+  content: '';
+  position: absolute;
+  width: 40%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), #818cf8);
+  bottom: -10px;
+  left: 30%;
+  border-radius: 2px;
+}
+
+.analysis-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.analysis-detail-item {
+  background-color: var(--background-light);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease;
+}
+
+.analysis-detail-item:hover {
+  transform: translateY(-5px);
+}
+
+.analysis-detail-item h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.analysis-detail-item p {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* Analyze Button Styling */
+.analyze-button {
+  background-color: transparent !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+  transition: all 0.3s ease !important;
+}
+
+.analyze-button:hover {
+  background-color: rgba(79, 70, 229, 0.05) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Matching skills section */
+.matching-skills {
+  margin: 32px 0;
+  text-align: center;
+}
+
+.matching-skills h4 {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+.analysis-actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.analysis-actions .apply-button {
+  min-width: 200px;
+}
   
