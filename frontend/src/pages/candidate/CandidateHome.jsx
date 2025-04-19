@@ -14,6 +14,8 @@ const CandidateHome = () => {
   // Scroll to top when component mounts
 
   return (
+    <div className="home">
+
     <div className="home-container">
       <nav className="navbar">
         <div className="navbar-logo">
@@ -62,10 +64,16 @@ const CandidateHome = () => {
               <h3>Quick Apply</h3>
               <p>Apply to multiple positions with a single click</p>
             </div>
+            <div className="feature-card">
+              <div className="feature-icon">🤖</div>
+              <h3>With the help of AI</h3>
+              <p>Get personalized job recommendations based on your profile</p>
+            </div>
           </div>
         </div>
       </section>
       
+    </div>
     </div>
     
   );

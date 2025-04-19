@@ -25,6 +25,16 @@ body {
   box-sizing: border-box;
 }
 
+.home {
+  background-color: #f0f4ff;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  position: relative;
+}
+
 /* Home container - fix layout */
 .home-container {
   min-height: 100vh;
