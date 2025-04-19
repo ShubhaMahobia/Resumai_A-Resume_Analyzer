@@ -1,5 +1,11 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { 
+  createBrowserRouter, 
+  RouterProvider, 
+  Route, 
+  Navigate, 
+  Outlet 
+} from 'react-router-dom'
 import AuthForm from './pages/AuthForm'
 import './App.css'
 import CandidateHome from './pages/candidate/CandidateHome'
@@ -12,26 +18,38 @@ import ViewJobDetails from './pages/recruiter/ViewJobDetails'
 import JobCandidates from './pages/recruiter/JobCandidates'
 import VerifyEmail from './pages/VerifyEmail'
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AuthForm />,
+  },
+  {
+    path: "/verify-email/:token",
+    element: <VerifyEmail />,
+  },
+  {
+    element: <ProtectedRoute />, 
+    children: [
+      { path: "/candidate/home", element: <CandidateHome /> },
+      { path: "/recruiter/home", element: <RecruiterHome /> },
+      { path: "/candidate/jobs", element: <JobPortal /> },
+      { path: "/recruiter/postJob", element: <JobPostingForm /> }, 
+      { path: "/recruiter/myjobs", element: <MyJobPosting /> },
+      { path: "/recruiter/job/:id", element: <ViewJobDetails /> },
+      { path: "/recruiter/job/:jobId/candidates", element: <JobCandidates /> },
+    ]
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
+  }
+]);
+
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<AuthForm />} />
-          <Route path="/verify-email/:token" element={<VerifyEmail />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/candidate/home" element={<CandidateHome />} />
-            <Route path="/recruiter/home" element={<RecruiterHome />} />
-            <Route path="/candidate/jobs" element={<JobPortal />} />
-            <Route path="/recruiter/postJob" element={<JobPostingForm />} />
-            <Route path="/recruiter/myjobs" element={<MyJobPosting />} />
-            <Route path="/recruiter/job/:id" element={<ViewJobDetails />} />
-            <Route path="/recruiter/job/:jobId/candidates" element={<JobCandidates />} />
-          </Route>
-        </Routes>
-      </div>
-    </Router>
+    <div className="App">
+      <RouterProvider router={router} />
+    </div>
   )
 }
 
