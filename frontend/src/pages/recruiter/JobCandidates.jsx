@@ -7,6 +7,7 @@ import {
   CircularProgress, Box, Chip, Card
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { getApiUrl, getHeaders } from '../../utils/api';
 
 const JobCandidates = () => {
   const { jobId } = useParams();
@@ -27,10 +28,8 @@ const JobCandidates = () => {
           return;
         }
 
-        const response = await axios.get(`http://127.0.0.1:5000/recruiter/job/${jobId}/candidates`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        const response = await axios.get(getApiUrl(`/recruiter/job/${jobId}/candidates`), {
+          headers: getHeaders()
         });
 
         console.log('API Response:', response.data);

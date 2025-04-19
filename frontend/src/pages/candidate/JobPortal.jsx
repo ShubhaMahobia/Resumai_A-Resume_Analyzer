@@ -3,6 +3,7 @@ import { TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, C
 import axios from "axios";
 import { FaSearch, FaBriefcase, FaMapMarkerAlt, FaCalendarAlt, FaEye, FaPaperPlane } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { getApiUrl, getHeaders, getUploadHeaders } from "../../utils/api";
 import "./JobPortal.css";
 
 export default function JobPortal() {
@@ -24,8 +25,8 @@ export default function JobPortal() {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const response = await axios.get("http://127.0.0.1:5000/getAlljobs", {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.get(getApiUrl("/getAlljobs"), {
+          headers: getHeaders(),
         });
         setJobs(response.data.jobs);
       } catch (error) {
@@ -35,9 +36,8 @@ export default function JobPortal() {
 
     const fetchAppliedJobs = async () => {
       try {
-        const token = localStorage.getItem("access_token");
-        const response = await axios.get("http://127.0.0.1:5000/get/applied/job", {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.get(getApiUrl("/get/applied/job"), {
+          headers: getHeaders(),
         });
 
         if (response.data.applied_jobs) {
@@ -104,12 +104,8 @@ export default function JobPortal() {
     formData.append("job_id", selectedJobId);
 
     try {
-      const token = localStorage.getItem("access_token");
-      const response = await axios.post("http://127.0.0.1:5000/resume/upload", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await axios.post(getApiUrl("/resume/upload"), formData, {
+        headers: getUploadHeaders(),
       });
 
       setUploadResult(response.data.match_details || { message: response.data.message });
@@ -139,12 +135,8 @@ export default function JobPortal() {
     formData.append("job_id", selectedJobId);
 
     try {
-      const token = localStorage.getItem("access_token");
-      const response = await axios.post("http://127.0.0.1:5000/analyze/resume/match", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await axios.post(getApiUrl("/analyze/resume/match"), formData, {
+        headers: getUploadHeaders(),
       });
 
       setAnalysisResult(response.data.match_details);

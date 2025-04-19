@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getApiUrl, getHeaders } from "../../utils/api";
 import "./MyJobPosting.css";
 
 export default function MyJobPosting() {
@@ -23,14 +24,10 @@ export default function MyJobPosting() {
           return;
         }
         
-
-        const API_BASE_URL = "http://127.0.0.1:5000";
         console.log("Fetching jobs with token:", token.substring(0, 10) + "...");
         
-        const response = await axios.get(`${API_BASE_URL}/get/my/job`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await axios.get(getApiUrl("/get/my/job"), {
+          headers: getHeaders(),
         });
         
         console.log("API Response:", response.data);

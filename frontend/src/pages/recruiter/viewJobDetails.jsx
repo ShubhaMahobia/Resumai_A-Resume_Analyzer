@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaBriefcase, FaMapMarkerAlt, FaCalendarAlt, FaCheck } from 'react-icons/fa';
+import { getApiUrl, getHeaders } from '../../utils/api';
 import './ViewJobDetails.css';
 
 const ViewJobDetails = () => {
@@ -27,10 +28,8 @@ const ViewJobDetails = () => {
         console.log("Fetching job details for ID:", id);
         console.log("Using token:", token.substring(0, 10) + "...");
 
-        const response = await axios.get(`http://127.0.0.1:5000/recruiter/job/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        const response = await axios.get(getApiUrl(`/recruiter/job/${id}`), {
+          headers: getHeaders()
         });
 
         console.log("API Response:", response.data);
