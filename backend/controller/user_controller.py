@@ -90,7 +90,11 @@ class UserProfile(Resource):
 class ResumeUploadResource(Resource):
     @jwt_required()
     def post(self):
+        # Download all necessary NLTK resources
         nltk.download('punkt')
+        nltk.download('stopwords')
+        nltk.download('wordnet')
+        
         if "resume" not in request.files:
             return {"error": "No file uploaded"}, 400
 

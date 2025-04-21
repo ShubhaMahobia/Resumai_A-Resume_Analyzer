@@ -13,9 +13,11 @@ def download_nltk_data():
     
     # Download required packages
     nltk.download('punkt', download_dir=nltk_data_dir)
-    # Add any other required NLTK packages here
+    nltk.download('stopwords', download_dir=nltk_data_dir)
+    nltk.download('wordnet', download_dir=nltk_data_dir)
     
     print(f"NLTK data downloaded to {nltk_data_dir}")
+    print("NLTK data paths:", nltk.data.path)
 
 if __name__ == "__main__":
     download_nltk_data() 
