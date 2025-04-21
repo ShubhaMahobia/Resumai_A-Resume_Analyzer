@@ -4,6 +4,7 @@ import axios from "axios";
 import { FaSearch, FaBriefcase, FaMapMarkerAlt, FaCalendarAlt, FaEye, FaPaperPlane } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./JobPortal.css";
+import LoadingAnimation from "../../components/LoadingAnimation";
 
 export default function JobPortal() {
   const navigate = useNavigate();
@@ -97,7 +98,10 @@ export default function JobPortal() {
     }
 
     setIsUploading(true);
+    setIsAnalyzing(true); // Also use the loading animation for submission
     setUploadResult(null);
+    // Close dialog while processing
+    setOpenDialog(false);
 
     const formData = new FormData();
     formData.append("resume", selectedFile);
@@ -105,6 +109,9 @@ export default function JobPortal() {
 
     try {
       const token = localStorage.getItem("access_token");
+      // Ensure loading shows for at least 2.5 seconds
+      const uploadStart = Date.now();
+      
       const response = await axios.post("http://127.0.0.1:5000/resume/upload", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -112,15 +119,27 @@ export default function JobPortal() {
         },
       });
 
+      // Ensure loading animation shows for at least 2.5 seconds
+      const uploadTime = Date.now() - uploadStart;
+      if (uploadTime < 2500) {
+        await new Promise(resolve => setTimeout(resolve, 2500 - uploadTime));
+      }
+
       setUploadResult(response.data.match_details || { message: response.data.message });
       
       const updatedAppliedJobs = [...appliedJobs, selectedJobId];
       setAppliedJobs(updatedAppliedJobs);
+      
+      // Reopen the dialog with results
+      setOpenDialog(true);
     } catch (error) {
       console.error("[ERROR] Uploading resume:", error);
       alert("Failed to upload resume.");
+      // Reopen dialog on error
+      setOpenDialog(true);
     } finally {
       setIsUploading(false);
+      setIsAnalyzing(false); // Turn off the loading animation
     }
   };
 
@@ -133,6 +152,8 @@ export default function JobPortal() {
 
     setIsAnalyzing(true);
     setAnalysisResult(null);
+    // Close the dialog while analyzing
+    setOpenDialog(false);
 
     const formData = new FormData();
     formData.append("resume", selectedFile);
@@ -140,6 +161,9 @@ export default function JobPortal() {
 
     try {
       const token = localStorage.getItem("access_token");
+      // Simulate a minimum loading time to show the animation (at least 2.5 seconds)
+      const analysisStart = Date.now();
+      
       const response = await axios.post("http://127.0.0.1:5000/analyze/resume/match", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -147,10 +171,20 @@ export default function JobPortal() {
         },
       });
 
+      // Ensure loading animation shows for at least 2.5 seconds
+      const analysisTime = Date.now() - analysisStart;
+      if (analysisTime < 2500) {
+        await new Promise(resolve => setTimeout(resolve, 2500 - analysisTime));
+      }
+
       setAnalysisResult(response.data.match_details);
+      // Reopen dialog with results
+      setOpenDialog(true);
     } catch (error) {
       console.error("[ERROR] Analyzing resume:", error);
       alert("Failed to analyze resume.");
+      // Reopen dialog on error
+      setOpenDialog(true);
     } finally {
       setIsAnalyzing(false);
     }
@@ -354,6 +388,9 @@ export default function JobPortal() {
 
   return (
     <div className="job-portal-container">
+      {/* Loading Animation when analyzing */}
+      {isAnalyzing && <LoadingAnimation />}
+      
       <nav className="navbar">
         <div className="navbar-logo" onClick={() => navigate('/candidate/home')}>
           <span>Resumai</span>
@@ -498,11 +535,10 @@ export default function JobPortal() {
               color="primary"
               className="dialog-btn-primary"
               disabled={(analyzeMode && isAnalyzing) || (!analyzeMode && isUploading) || !selectedFile}
-              startIcon={(analyzeMode && isAnalyzing) || (!analyzeMode && isUploading) ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {analyzeMode 
-                ? (isAnalyzing ? "Analyzing..." : "Analyze Match") 
-                : (isUploading ? "Processing..." : "Submit Application")
+                ? "Analyze Match"
+                : "Submit Application"
               }
             </Button>
           )}
