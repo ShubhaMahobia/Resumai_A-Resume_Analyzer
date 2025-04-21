@@ -13,7 +13,7 @@ const JobPostingForm = ({ isOpen, onClose, onSubmit }) => {
   });
 
   const [errors, setErrors] = useState({});
-  const API_BASE_URL = "http://127.0.0.1:5000";  
+  const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

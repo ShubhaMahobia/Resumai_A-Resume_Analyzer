@@ -27,7 +27,9 @@ const JobCandidates = () => {
           return;
         }
 
-        const response = await axios.get(`http://127.0.0.1:5000/recruiter/job/${jobId}/candidates`, {
+        const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";
+
+        const response = await axios.get(`${API_BASE_URL}/recruiter/job/${jobId}/candidates`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

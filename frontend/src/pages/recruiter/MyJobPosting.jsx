@@ -23,8 +23,8 @@ export default function MyJobPosting() {
           return;
         }
         
+        const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";
 
-        const API_BASE_URL = "http://127.0.0.1:5000";
         console.log("Fetching jobs with token:", token.substring(0, 10) + "...");
         
         const response = await axios.get(`${API_BASE_URL}/get/my/job`, {

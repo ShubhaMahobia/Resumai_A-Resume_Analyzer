@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './VerifyEmail.css';
 
-const API_BASE_URL = "http://127.0.0.1:5000";
+const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com"; 
 
 const VerifyEmail = () => {
   const { token } = useParams();

@@ -21,11 +21,14 @@ export default function JobPortal() {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [analyzeMode, setAnalyzeMode] = useState(false);
 
+
+  const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const response = await axios.get("http://127.0.0.1:5000/getAlljobs", {
+        const response = await axios.get(`${API_BASE_URL}/getAlljobs`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setJobs(response.data.jobs);
@@ -37,7 +40,7 @@ export default function JobPortal() {
     const fetchAppliedJobs = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const response = await axios.get("http://127.0.0.1:5000/get/applied/job", {
+        const response = await axios.get(`${API_BASE_URL}/get/applied/job`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -112,7 +115,7 @@ export default function JobPortal() {
       // Ensure loading shows for at least 2.5 seconds
       const uploadStart = Date.now();
       
-      const response = await axios.post("http://127.0.0.1:5000/resume/upload", formData, {
+      const response = await axios.post(`${API_BASE_URL}/resume/upload`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -164,7 +167,7 @@ export default function JobPortal() {
       // Simulate a minimum loading time to show the animation (at least 2.5 seconds)
       const analysisStart = Date.now();
       
-      const response = await axios.post("http://127.0.0.1:5000/analyze/resume/match", formData, {
+      const response = await axios.post(`${API_BASE_URL}/analyze/resume/match`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

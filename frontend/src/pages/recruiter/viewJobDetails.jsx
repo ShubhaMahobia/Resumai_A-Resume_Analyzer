@@ -27,7 +27,9 @@ const ViewJobDetails = () => {
         console.log("Fetching job details for ID:", id);
         console.log("Using token:", token.substring(0, 10) + "...");
 
-        const response = await axios.get(`http://127.0.0.1:5000/recruiter/job/${id}`, {
+        const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";
+
+        const response = await axios.get(`${API_BASE_URL}/recruiter/job/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
