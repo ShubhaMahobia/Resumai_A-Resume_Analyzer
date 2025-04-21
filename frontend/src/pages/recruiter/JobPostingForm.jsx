@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { getApiUrl, getHeaders } from '../../utils/api';
 import '../recruiter/JobPostingForm.css';
 
 const JobPostingForm = ({ isOpen, onClose, onSubmit }) => {
@@ -14,6 +13,7 @@ const JobPostingForm = ({ isOpen, onClose, onSubmit }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const API_BASE_URL = "http://127.0.0.1:5000";  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -47,7 +47,7 @@ const JobPostingForm = ({ isOpen, onClose, onSubmit }) => {
     try {
       const token = localStorage.getItem("access_token");
       console.log(formData) // Get JWT token from storage
-      const response = await fetch(getApiUrl('/recruiter/postjob'), {
+      const response = await fetch(`${API_BASE_URL}/recruiter/postjob`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

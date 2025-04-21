@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import 'boxicons';
-import { API_BASE_URL } from '../utils/api';
 import './AuthForm.css';
+
+const API_BASE_URL = "http://127.0.0.1:5000";  // Change this to your backend URL if needed
 
 const AuthForm = () => {
   const navigate = useNavigate();
