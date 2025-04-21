@@ -90,7 +90,7 @@ class UserProfile(Resource):
 class ResumeUploadResource(Resource):
     @jwt_required()
     def post(self):
-        nltk.download('punkt_tab')
+        nltk.download('punkt')
         if "resume" not in request.files:
             return {"error": "No file uploaded"}, 400
 
