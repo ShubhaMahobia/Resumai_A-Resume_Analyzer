@@ -9,6 +9,8 @@ from utils.email_utils import send_welcome_email
 import PyPDF2
 import tempfile
 import os
+import nltk
+
 UPLOAD_FOLDER = "uploads"
 bcrypt = Bcrypt()
 
@@ -88,6 +90,7 @@ class UserProfile(Resource):
 class ResumeUploadResource(Resource):
     @jwt_required()
     def post(self):
+        nltk.download('punkt_tab')
         if "resume" not in request.files:
             return {"error": "No file uploaded"}, 400
 
