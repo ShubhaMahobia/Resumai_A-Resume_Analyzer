@@ -8,14 +8,10 @@ from models.models import db
 from routes import initialize_routes
 import os  # Import routes function
 from flask_mail import Mail  # Import Flask-Mail
-from nltk_setup import download_nltk_data  # Import NLTK setup function
-import nltk
 import os
 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
-
-nltk.data.path.append(os.path.join(os.path.dirname(__file__), 'nltk_data'))
 
 # More permissive CORS settings for development
 CORS(app, resources={
@@ -35,10 +31,6 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-UPLOAD_FOLDER = "static/uploads"
-ALLOWED_EXTENSIONS = {"pdf", "docx"}
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Initialize extensions
 bcrypt = Bcrypt(app)
