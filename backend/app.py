@@ -23,6 +23,11 @@ CORS(app, resources={
     }
 })
 
+# Default route to test if server is running
+@app.route('/')
+def server_health_check():
+    return {"status": "Server is running", "message": "API server is operational"}, 200
+
 # Extra CORS configuration for specific endpoints that might need it
 @app.after_request
 def after_request(response):
