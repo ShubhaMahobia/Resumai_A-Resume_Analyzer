@@ -9,12 +9,13 @@ from routes import initialize_routes
 import os  # Import routes function
 from flask_mail import Mail  # Import Flask-Mail
 from nltk_setup import download_nltk_data  # Import NLTK setup function
+import nltk
+import os
 
 app = Flask(__name__)
 app.config.from_object(ApplicationConfig)
 
-# Download NLTK data on startup
-download_nltk_data()
+nltk.data.path.append(os.path.join(os.path.dirname(__file__), 'nltk_data'))
 
 # More permissive CORS settings for development
 CORS(app, resources={
