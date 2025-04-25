@@ -17,13 +17,14 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
-COPY . .
-
-# Set up NLTK data
+# Set up NLTK data using the recommended approach
 ENV NLTK_DATA=/app/nltk_data
 RUN mkdir -p /app/nltk_data
-RUN python setup_nltk_data.py
+# Download required NLTK data packages directly using nltk.downloader
+RUN python -c "import nltk; nltk.download('punkt', download_dir='/app/nltk_data'); nltk.download('stopwords', download_dir='/app/nltk_data'); nltk.download('wordnet', download_dir='/app/nltk_data')"
+
+# Copy the rest of the application
+COPY . .
 
 # Expose the port the app runs on
 EXPOSE 5000
