@@ -27,7 +27,7 @@ const ViewJobDetails = () => {
         console.log("Fetching job details for ID:", id);
         console.log("Using token:", token.substring(0, 10) + "...");
 
-        const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";
+        const API_BASE_URL = import.meta.env.VITE_API_URL;
 
         const response = await axios.get(`${API_BASE_URL}/recruiter/job/${id}`, {
           headers: {

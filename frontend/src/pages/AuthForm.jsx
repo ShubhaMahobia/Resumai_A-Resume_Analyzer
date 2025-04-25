@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import 'boxicons';
 import './AuthForm.css';
 
-const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";  // Change this to your backend URL if needed
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const AuthForm = () => {
   const navigate = useNavigate();

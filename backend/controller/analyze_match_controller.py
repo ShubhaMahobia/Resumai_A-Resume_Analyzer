@@ -7,12 +7,7 @@ import tempfile
 import json
 import re
 import string
-import nltk
 
-# Ensure NLTK resources are available
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
 
 from models.models import db, Job
 # Import all the necessary functions directly

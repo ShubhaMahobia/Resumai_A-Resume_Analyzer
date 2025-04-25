@@ -13,7 +13,7 @@ const JobPostingForm = ({ isOpen, onClose, onSubmit }) => {
   });
 
   const [errors, setErrors] = useState({});
-  const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";  
+  const API_BASE_URL = import.meta.env.VITE_API_URL;  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

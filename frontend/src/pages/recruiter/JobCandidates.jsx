@@ -27,7 +27,7 @@ const JobCandidates = () => {
           return;
         }
 
-        const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";
+        const API_BASE_URL = import.meta.env.VITE_API_URL;
 
         const response = await axios.get(`${API_BASE_URL}/recruiter/job/${jobId}/candidates`, {
           headers: {

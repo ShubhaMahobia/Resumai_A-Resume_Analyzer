@@ -14,7 +14,7 @@ import ProtectedRoute from './services/ProtectedRoute'
 import JobPortal from './pages/candidate/JobPortal'
 import JobPostingForm from './pages/recruiter/JobPostingForm'
 import MyJobPosting from './pages/recruiter/MyJobPosting'
-import ViewJobDetails from './pages/recruiter/ViewJobDetails'
+import ViewJobDetails from './pages/recruiter/viewJobDetails'
 import JobCandidates from './pages/recruiter/JobCandidates'
 import VerifyEmail from './pages/VerifyEmail'
 

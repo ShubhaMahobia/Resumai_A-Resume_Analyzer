@@ -22,7 +22,7 @@ export default function JobPortal() {
   const [analyzeMode, setAnalyzeMode] = useState(false);
 
 
-  const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";
+  const API_BASE_URL = import.meta.env.VITE_API_URL; 
 
   useEffect(() => {
     const fetchJobs = async () => {

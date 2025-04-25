@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './VerifyEmail.css';
 
-const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com"; 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const VerifyEmail = () => {
   const { token } = useParams();

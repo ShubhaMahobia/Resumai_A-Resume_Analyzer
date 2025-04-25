@@ -23,7 +23,7 @@ export default function MyJobPosting() {
           return;
         }
         
-        const API_BASE_URL = "https://resumai-a-resume-analyzer-backend.onrender.com";
+        const API_BASE_URL = import.meta.env.VITE_API_URL;
 
         console.log("Fetching jobs with token:", token.substring(0, 10) + "...");
         
